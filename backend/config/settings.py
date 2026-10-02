@@ -18,6 +18,8 @@ class Settings(BaseSettings):
     
     @field_validator("database_url", mode="before")
     def fix_postgres_url(cls, v):
+        if not v or not str(v).strip():
+            return "sqlite:///./smartfarm.db"
         if isinstance(v, str):
             v = v.strip().strip("'").strip('"')
             if v.startswith("postgres://"):
