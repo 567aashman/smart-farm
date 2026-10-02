@@ -116,7 +116,7 @@ def handle_today(db, chat_id):
 
 def handle_help(chat_id):
     text = (
-        "🛠️ <b>SmartFarm Bot Commands</b>\n\n"
+        "🛠️ <b>KisanSathi Bot Commands</b>\n\n"
         "/start <code> - Link your account\n"
         "/status - View your farm status\n"
         "/today - Get today's action plan\n"
@@ -146,7 +146,7 @@ def handle_chat(db, chat_id, text):
             db=db,
             weather_service=weather_service
         ))
-        send(chat_id, f"🤖 <b>FarmAI:</b>\n\n{result['reply']}")
+        send(chat_id, f"🤖 <b>KisanSathi:</b>\n\n{result['reply']}")
     except Exception as e:
         logger.error(f"FarmAI chat error: {e}")
         send(chat_id, "⚠️ Sorry, FarmAI is temporarily unavailable.")
