@@ -85,7 +85,7 @@ class TelegramService:
 
     async def _get_bot_username(self) -> str:
         if not self.is_configured():
-            return "SmartFarmBot"
+            return "anndata_bot"
         try:
             async with httpx.AsyncClient(timeout=5) as client:
                 resp = await client.get(f"{TELEGRAM_API}/getMe")
@@ -93,7 +93,7 @@ class TelegramService:
                     return resp.json()["result"]["username"]
         except Exception:
             pass
-        return "SmartFarmBot"
+        return "anndata_bot"
 
     async def handle_webhook(self, db: Session, update: dict, farm_ai_agent=None, weather_service=None) -> bool:
         """
