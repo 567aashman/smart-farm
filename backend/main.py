@@ -93,7 +93,16 @@ def seed_crop_catalog():
 # ── Startup / Shutdown ──
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    import threading
+    from backend.notifications.run_bot import main as run_telegram_bot
+    
     logger.info(f"🌾 SmartFarm v{APP_VERSION} starting...")
+
+    # Start Telegram bot in background thread if token is present
+    if settings.telegram_bot_token:
+        bot_thread = threading.Thread(target=run_telegram_bot, daemon=True)
+        bot_thread.start()
+        logger.info("✅ Telegram bot background thread started.")
 
     # Initialize database tables
     try:
