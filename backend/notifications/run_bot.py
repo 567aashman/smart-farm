@@ -17,7 +17,9 @@ load_dotenv()
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+from backend.config.settings import settings
+
+TOKEN = settings.telegram_bot_token
 BASE_URL = f"https://api.telegram.org/bot{TOKEN}"
 
 
