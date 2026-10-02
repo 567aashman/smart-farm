@@ -1,5 +1,5 @@
 """
-SmartFarm AI - Main FastAPI Application
+SmartFarm - Main FastAPI Application
 Phase 0: Project Foundation
 
 Startup:
@@ -93,7 +93,7 @@ def seed_crop_catalog():
 # ── Startup / Shutdown ──
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    logger.info(f"🌾 SmartFarm AI v{APP_VERSION} starting...")
+    logger.info(f"🌾 SmartFarm v{APP_VERSION} starting...")
 
     # Initialize database tables
     try:
@@ -115,7 +115,7 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.error(f"⚠️ Scheduler failed to start: {e}")
 
-    logger.info(f"✅ SmartFarm AI is ready. Env: {settings.app_env}")
+    logger.info(f"✅ SmartFarm is ready. Env: {settings.app_env}")
     yield
 
     # Shutdown
@@ -124,12 +124,12 @@ async def lifespan(app: FastAPI):
         farm_scheduler.shutdown()
     except Exception:
         pass
-    logger.info("SmartFarm AI shutdown complete.")
+    logger.info("SmartFarm shutdown complete.")
 
 
 # ── App Instance ──
 app = FastAPI(
-    title="SmartFarm AI",
+    title="SmartFarm",
     description="Agricultural decision-support system for Indian farmers",
     version=APP_VERSION,
     lifespan=lifespan,

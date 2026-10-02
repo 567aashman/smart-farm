@@ -1,5 +1,5 @@
 /**
- * SmartFarm AI - Irrigation JS
+ * SmartFarm - Irrigation JS
  */
 
 if (!requireAuth()) {}

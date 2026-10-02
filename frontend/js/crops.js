@@ -1,5 +1,5 @@
 /**
- * SmartFarm AI - Crops Page JS
+ * SmartFarm - Crops Page JS
  */
 
 if (!requireAuth()) {}

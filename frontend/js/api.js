@@ -1,5 +1,5 @@
 /**
- * SmartFarm AI - API Client
+ * SmartFarm - API Client
  * Central fetch wrapper for all backend calls.
  */
 

@@ -1,5 +1,5 @@
 """
-SmartFarm AI - Pydantic Schemas
+SmartFarm - Pydantic Schemas
 Request/response validation for all API endpoints.
 """
 from datetime import datetime, date

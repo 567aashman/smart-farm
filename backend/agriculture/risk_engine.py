@@ -1,5 +1,5 @@
 """
-SmartFarm AI - Risk Engine (Phase 7)
+SmartFarm - Risk Engine (Phase 7)
 Detects weather and crop/environment risks.
 
 IMPORTANT: We do NOT diagnose diseases from weather alone.

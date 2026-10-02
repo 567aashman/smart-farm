@@ -1,5 +1,5 @@
 """
-SmartFarm AI - Crop Recommendation Engine (Phase 5)
+SmartFarm - Crop Recommendation Engine (Phase 5)
 Matches crop suitability to location, season, soil, and weather.
 Every recommendation includes a detailed explanation.
 """

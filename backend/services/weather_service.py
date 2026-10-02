@@ -1,5 +1,5 @@
 """
-SmartFarm AI - Weather Service (Phase 3)
+SmartFarm - Weather Service (Phase 3)
 Abstraction layer over OpenWeatherMap API.
 All weather data comes from the API — never fabricated.
 """

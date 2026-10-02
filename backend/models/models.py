@@ -1,5 +1,5 @@
 """
-SmartFarm AI - All Database Models
+SmartFarm - All Database Models
 Phase 1: Complete data model for the farming application.
 
 Relationship tree:

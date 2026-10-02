@@ -1,5 +1,5 @@
 """
-SmartFarm AI - Farms API Routes (Phase 2)
+SmartFarm - Farms API Routes (Phase 2)
 Farm, soil, and field management endpoints.
 """
 import logging

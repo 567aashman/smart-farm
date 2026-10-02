@@ -1,5 +1,5 @@
 """
-SmartFarm AI - FarmAI Agent (Phase 10)
+SmartFarm - FarmAI Agent (Phase 10)
 Groq-powered AI assistant with tool calling.
 
 Architecture:
@@ -24,7 +24,7 @@ from backend.tools.farm_tools import FarmToolExecutor, TOOL_DEFINITIONS
 
 logger = logging.getLogger(__name__)
 
-SYSTEM_PROMPT = """You are FarmAI, a knowledgeable agricultural assistant for SmartFarm AI.
+SYSTEM_PROMPT = """You are FarmAI, a knowledgeable agricultural assistant for SmartFarm.
 
 You help farmers make practical day-to-day farming decisions based on their real farm data, weather conditions, and crop stages.
 

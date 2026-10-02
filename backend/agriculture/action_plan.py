@@ -1,5 +1,5 @@
 """
-SmartFarm AI - Action Plan Engine (Phase 8)
+SmartFarm - Action Plan Engine (Phase 8)
 Combines weather + irrigation + crop calendar + risk into a 7-day action plan.
 """
 import logging

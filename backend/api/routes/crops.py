@@ -1,5 +1,5 @@
 """
-SmartFarm AI - Crops API Routes (Phases 2, 5, 6)
+SmartFarm - Crops API Routes (Phases 2, 5, 6)
 Crop management, catalog, calendar, and recommendations.
 """
 import logging

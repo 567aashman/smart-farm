@@ -1,8 +1,8 @@
-# SmartFarm AI — Implementation Plan
+# SmartFarm — Implementation Plan
 
 ## 1. Project Overview
 
-Build **SmartFarm AI**, a full-stack agricultural decision-support application that helps farmers make practical day-to-day farming decisions using:
+Build **SmartFarm**, a full-stack agricultural decision-support application that helps farmers make practical day-to-day farming decisions using:
 
 - Farm and location information
 - Soil information
@@ -153,7 +153,7 @@ and a normal browser for the frontend.
 # 4. Target Architecture
 
 ```text
-                         SMARTFARM AI
+                         SmartFarm
                               │
                 ┌─────────────┴─────────────┐
                 │                           │
@@ -1359,7 +1359,7 @@ Mobile application
 
 # PRODUCT PRINCIPLE
 
-SmartFarm AI should follow:
+SmartFarm should follow:
 
 ```text
 REAL FARM DATA

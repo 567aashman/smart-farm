@@ -1,5 +1,5 @@
 """
-SmartFarm AI - Crop Calendar Service (Phase 6)
+SmartFarm - Crop Calendar Service (Phase 6)
 Generates crop stage timelines and farm tasks from sowing date.
 """
 import json

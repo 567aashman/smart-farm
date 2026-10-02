@@ -1,5 +1,5 @@
 """
-SmartFarm AI - Database Connection
+SmartFarm - Database Connection
 SQLAlchemy engine, session factory, and base model.
 """
 import logging

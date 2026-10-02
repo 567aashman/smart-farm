@@ -1,5 +1,5 @@
 """
-SmartFarm AI - Telegram Service (Phases 13, 14, 15)
+SmartFarm - Telegram Service (Phases 13, 14, 15)
 Telegram bot integration for reminders and FarmAI assistant.
 """
 import logging
@@ -136,7 +136,7 @@ class TelegramService:
             else:
                 await self.send_message(
                     chat_id,
-                    "🌾 <b>Welcome to SmartFarm AI!</b>\n\n"
+                    "🌾 <b>Welcome to SmartFarm!</b>\n\n"
                     "I can help you with:\n"
                     "• Irrigation reminders\n"
                     "• Weather alerts\n"

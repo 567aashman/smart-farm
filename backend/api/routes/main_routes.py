@@ -1,5 +1,5 @@
 """
-SmartFarm AI - Weather, Irrigation, Risk, Action Plan, AI and Market Routes
+SmartFarm - Weather, Irrigation, Risk, Action Plan, AI and Market Routes
 """
 import logging
 from typing import Optional, List

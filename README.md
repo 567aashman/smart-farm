@@ -1,7 +1,7 @@
-# SmartFarm AI
+# SmartFarm
 
 ## Project Overview
-SmartFarm AI is a full-stack agricultural decision-support application that helps farmers make practical day-to-day farming decisions using real farm data, real weather data, agricultural rules, and an AI assistant. It provides recommendations for irrigation, crop selection, and daily action plans to ensure optimal farm management.
+SmartFarm is a full-stack agricultural decision-support application that helps farmers make practical day-to-day farming decisions using real farm data, real weather data, agricultural rules, and an AI assistant. It provides recommendations for irrigation, crop selection, and daily action plans to ensure optimal farm management.
 
 ## Problem Statement
 Farmers face difficulties keeping track of rapidly changing weather patterns, accurate crop cycle needs, and timely interventions. Standard weather apps lack agricultural context, and generalized AI chatbots lack farm-specific real-time data integration, leading to suboptimal decision-making and reduced yields.

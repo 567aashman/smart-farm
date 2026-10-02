@@ -1,5 +1,5 @@
 """
-SmartFarm AI - Scheduler (Phase 14)
+SmartFarm - Scheduler (Phase 14)
 APScheduler-based reminder system for irrigation, weather, and crop alerts.
 """
 import logging

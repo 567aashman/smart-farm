@@ -1,5 +1,5 @@
 """
-SmartFarm AI - Users API Routes
+SmartFarm - Users API Routes
 """
 import logging
 from fastapi import APIRouter, Depends, HTTPException, status

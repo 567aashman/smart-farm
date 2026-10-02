@@ -1,5 +1,5 @@
 """
-SmartFarm AI - Market Service (Phase 16)
+SmartFarm - Market Service (Phase 16)
 Fetches mandi/market prices for crops.
 
 Now uses Tavily API and BeautifulSoup to scrape live data from the internet!

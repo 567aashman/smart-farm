@@ -1,5 +1,5 @@
 /**
- * SmartFarm AI - Dashboard JS
+ * SmartFarm - Dashboard JS
  * Loads all dashboard sections from the API.
  */
 

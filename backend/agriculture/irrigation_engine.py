@@ -1,5 +1,5 @@
 """
-SmartFarm AI - Irrigation Engine (Phase 4)
+SmartFarm - Irrigation Engine (Phase 4)
 Rule-based agricultural irrigation recommendations.
 
 The LLM does NOT calculate irrigation values.

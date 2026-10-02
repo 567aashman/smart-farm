@@ -1,5 +1,5 @@
 /**
- * SmartFarm AI - Onboarding JS
+ * SmartFarm - Onboarding JS
  * Handles multi-step farm setup flow.
  */
 

@@ -1,5 +1,5 @@
 /**
- * SmartFarm AI - FarmAI Chat JS
+ * SmartFarm - FarmAI Chat JS
  */
 
 if (!requireAuth()) { /* redirected */ }

@@ -1,5 +1,5 @@
 """
-SmartFarm AI - FarmAI Tools (Phase 10)
+SmartFarm - FarmAI Tools (Phase 10)
 Tools that the Groq AI agent can call to fetch real farm/weather data.
 The AI must never invent weather, farm, or irrigation data.
 All values come from the actual services and database.

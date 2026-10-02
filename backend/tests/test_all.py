@@ -1,5 +1,5 @@
 """
-SmartFarm AI - Automated Tests (Phase 20)
+SmartFarm - Automated Tests (Phase 20)
 Tests for all agricultural engines, services, and API endpoints.
 Run: pytest backend/tests/ -v
 """

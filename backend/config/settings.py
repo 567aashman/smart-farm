@@ -1,5 +1,5 @@
 """
-SmartFarm AI - Configuration
+SmartFarm - Configuration
 Loads and validates all environment variables.
 """
 import os
