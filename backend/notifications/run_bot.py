@@ -163,6 +163,13 @@ def main():
         
         for update in updates:
             offset = update["update_id"] + 1
+            
+            # Acknowledge immediately to prevent spam loop if there are crashes or duplicate bots
+            try:
+                httpx.get(f"{BASE_URL}/getUpdates", params={"offset": offset, "timeout": 0})
+            except Exception:
+                pass
+                
             msg = update.get("message")
             
             if msg and "text" in msg:
