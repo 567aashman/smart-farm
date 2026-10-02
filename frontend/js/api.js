@@ -3,7 +3,7 @@
  * Central fetch wrapper for all backend calls.
  */
 
-const API_BASE = 'http://localhost:8000/api';
+const API_BASE = '/api';
 
 // ── Session state (stored in localStorage) ──
 const State = {
@@ -74,7 +74,7 @@ class APIError extends Error {
 // ── API Methods ──
 const API = {
   // Health
-  health: () => fetch('http://localhost:8000/health').then(r => r.json()),
+  health: () => fetch('/health').then(r => r.json()),
 
   // Users
   createUser: (data) => apiFetch('/users/', { method: 'POST', body: data }),
