@@ -5,6 +5,7 @@ Loads and validates all environment variables.
 import os
 from typing import List
 from pydantic_settings import BaseSettings
+from pydantic import field_validator
 from dotenv import load_dotenv
 
 # Load .env file from project root
@@ -14,6 +15,12 @@ load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), "..", "..", ".en
 class Settings(BaseSettings):
     # Database
     database_url: str = "postgresql://postgres:password@localhost:5432/smartfarm"
+    
+    @field_validator("database_url", mode="before")
+    def fix_postgres_url(cls, v):
+        if isinstance(v, str) and v.startswith("postgres://"):
+            return v.replace("postgres://", "postgresql://", 1)
+        return v
 
     # AI
     groq_api_key: str = ""
