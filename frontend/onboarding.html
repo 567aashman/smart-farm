@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SmartFarm AI — Farm Setup</title>
+  <meta name="description" content="Set up your farm profile on SmartFarm AI to get personalized irrigation and crop recommendations.">
+  <link rel="stylesheet" href="styles/style.css">
+  <style>
+    body { overflow: auto; }
+    .onboard-layout {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: linear-gradient(135deg, #0a0f0d 0%, #0d1f0f 50%, #0a0f0d 100%);
+    }
+    .onboard-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-xl);
+      width: 100%;
+      max-width: 560px;
+      overflow: hidden;
+      box-shadow: var(--shadow-lg);
+    }
+    .onboard-header {
+      padding: 28px 32px;
+      border-bottom: 1px solid var(--color-border);
+      background: linear-gradient(135deg, #0d2b1a, #061408);
+      text-align: center;
+    }
+    .onboard-header h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--color-primary);
+      margin-bottom: 4px;
+    }
+    .onboard-header p { font-size: 0.85rem; color: var(--color-text-dim); }
+    .step-indicator {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 16px 32px;
+      border-bottom: 1px solid var(--color-border);
+    }
+    .step-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: var(--color-surface-3);
+      transition: var(--transition);
+    }
+    .step-dot.active { background: var(--color-primary); transform: scale(1.3); }
+    .step-dot.done { background: var(--color-primary-dim); }
+    .step-line { flex: 1; height: 2px; background: var(--color-border); max-width: 40px; }
+    .step-line.done { background: var(--color-primary-dark); }
+    .onboard-body { padding: 28px 32px; }
+    .step-content { display: none; animation: fadeStep 0.3s ease; }
+    .step-content.active { display: block; }
+    @keyframes fadeStep { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    .step-title { font-family: 'Outfit', sans-serif; font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; }
+    .step-subtitle { font-size: 0.82rem; color: var(--color-text-muted); margin-bottom: 24px; }
+    .onboard-footer {
+      padding: 20px 32px;
+      border-top: 1px solid var(--color-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .success-screen { text-align: center; padding: 20px 0; }
+    .success-icon { font-size: 4rem; margin-bottom: 16px; }
+    .success-screen h2 { font-family: 'Outfit', sans-serif; font-size: 1.4rem; font-weight: 700; margin-bottom: 8px; }
+    .success-screen p { color: var(--color-text-dim); font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+  <div class="onboard-layout">
+    <div class="onboard-card">
+      <div class="onboard-header">
+        <h1>🌾 SmartFarm AI</h1>
+        <p>Set up your farm in 3 simple steps</p>
+      </div>
+
+      <div class="step-indicator">
+        <div class="step-dot active" id="dot-1"></div>
+        <div class="step-line" id="line-1"></div>
+        <div class="step-dot" id="dot-2"></div>
+        <div class="step-line" id="line-2"></div>
+        <div class="step-dot" id="dot-3"></div>
+      </div>
+
+      <div class="onboard-body">
+        <!-- Step 1: Farmer Info -->
+        <div class="step-content active" id="step-1">
+          <div class="step-title">👤 Tell us about yourself</div>
+          <div class="step-subtitle">Your basic information to personalize your experience</div>
+          <div class="form-group">
+            <label class="form-label" for="farmer-name">Your Name *</label>
+            <input class="form-control" id="farmer-name" type="text" placeholder="e.g. Ramesh Kumar" required>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="farmer-phone">Phone Number</label>
+              <input class="form-control" id="farmer-phone" type="tel" placeholder="+91 9876543210">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="farmer-email">Email (optional)</label>
+              <input class="form-control" id="farmer-email" type="email" placeholder="farmer@email.com">
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 2: Farm Info -->
+        <div class="step-content" id="step-2">
+          <div class="step-title">🏡 Your Farm Details</div>
+          <div class="step-subtitle">Tell us about your farm location and setup</div>
+          <div class="form-group">
+            <label class="form-label" for="farm-name">Farm Name *</label>
+            <input class="form-control" id="farm-name" type="text" placeholder="e.g. Green Valley Farm">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="farm-location">Location (City/District) *</label>
+              <input class="form-control" id="farm-location" type="text" placeholder="e.g. Nagpur, Pune, Indore">
+              <div class="form-hint">Use city name for weather accuracy</div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="farm-state">State</label>
+              <select class="form-control" id="farm-state">
+                <option value="">Select State</option>
+                <option>Andhra Pradesh</option><option>Assam</option><option>Bihar</option>
+                <option>Chhattisgarh</option><option>Gujarat</option><option>Haryana</option>
+                <option>Himachal Pradesh</option><option>Jharkhand</option><option>Karnataka</option>
+                <option>Kerala</option><option>Madhya Pradesh</option><option>Maharashtra</option>
+                <option>Manipur</option><option>Odisha</option><option>Punjab</option>
+                <option>Rajasthan</option><option>Tamil Nadu</option><option>Telangana</option>
+                <option>Uttar Pradesh</option><option>Uttarakhand</option><option>West Bengal</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="farm-area">Total Area (Acres) *</label>
+              <input class="form-control" id="farm-area" type="number" placeholder="e.g. 5" min="0.1" step="0.1">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="irrigation-method">Irrigation Method</label>
+              <select class="form-control" id="irrigation-method">
+                <option value="flood">Flood Irrigation</option>
+                <option value="drip">Drip Irrigation</option>
+                <option value="sprinkler">Sprinkler</option>
+                <option value="furrow">Furrow</option>
+                <option value="rainfed">Rainfed Only</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="water-source">Water Source</label>
+              <select class="form-control" id="water-source">
+                <option value="borewell">Borewell</option>
+                <option value="canal">Canal</option>
+                <option value="river">River</option>
+                <option value="rainwater">Rainwater</option>
+                <option value="pond">Pond</option>
+                <option value="well">Well</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="soil-type">Soil Type</label>
+              <select class="form-control" id="soil-type">
+                <option value="loamy">Loamy</option>
+                <option value="clay">Clay</option>
+                <option value="sandy">Sandy</option>
+                <option value="sandy_loam">Sandy Loam</option>
+                <option value="clay_loam">Clay Loam</option>
+                <option value="silty">Silty</option>
+                <option value="peaty">Peaty</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="soil-ph">Soil pH (optional)</label>
+              <input class="form-control" id="soil-ph" type="number" placeholder="e.g. 6.5" min="0" max="14" step="0.1">
+              <div class="form-hint">Normal: 6.0–7.5</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 3: First Crop -->
+        <div class="step-content" id="step-3">
+          <div class="step-title">🌾 Add Your First Crop</div>
+          <div class="step-subtitle">Tell us what you're growing to get personalized advice</div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="crop-name">Crop *</label>
+              <select class="form-control" id="crop-name">
+                <option value="">Select Crop</option>
+                <option value="Wheat">Wheat (Gehun)</option>
+                <option value="Rice">Rice (Dhan)</option>
+                <option value="Maize">Maize (Makka)</option>
+                <option value="Mustard">Mustard (Sarson)</option>
+                <option value="Potato">Potato (Aloo)</option>
+                <option value="Tomato">Tomato (Tamatar)</option>
+                <option value="Cotton">Cotton (Kapas)</option>
+                <option value="Sugarcane">Sugarcane (Ganna)</option>
+                <option value="Chickpea">Chickpea (Chana)</option>
+                <option value="Soybean">Soybean</option>
+                <option value="custom">Other (type below)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="crop-variety">Variety (optional)</label>
+              <input class="form-control" id="crop-variety" type="text" placeholder="e.g. HD 2967, PBW 343">
+            </div>
+          </div>
+          <div id="custom-crop-row" class="form-group hidden">
+            <label class="form-label">Custom Crop Name</label>
+            <input class="form-control" id="crop-custom" type="text" placeholder="Enter crop name">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="field-name">Field Name</label>
+              <input class="form-control" id="field-name" type="text" placeholder="e.g. North Field, Plot A">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="crop-area">Crop Area (Acres)</label>
+              <input class="form-control" id="crop-area" type="number" placeholder="e.g. 2" min="0.1" step="0.1">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="sowing-date">Sowing Date (optional)</label>
+            <input class="form-control" id="sowing-date" type="date">
+            <div class="form-hint">Helps generate your crop calendar and harvest estimate</div>
+          </div>
+          <div class="alert alert-info mt-4">
+            <span class="alert-icon">ℹ️</span>
+            <div class="alert-content">
+              <div class="alert-title">Skip crop for now?</div>
+              You can always add crops later from the dashboard.
+            </div>
+          </div>
+        </div>
+
+        <!-- Success -->
+        <div class="step-content" id="step-success">
+          <div class="success-screen">
+            <div class="success-icon">🎉</div>
+            <h2>Farm Setup Complete!</h2>
+            <p>Welcome to SmartFarm AI. Your farm is ready.<br>Let's check your dashboard!</p>
+            <div class="mt-4">
+              <button class="btn btn-primary btn-lg" onclick="window.location.href='dashboard.html'">
+                📊 Open Dashboard →
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="onboard-footer" id="onboard-footer">
+        <button class="btn btn-ghost btn-sm" id="btn-back" onclick="prevStep()" style="visibility:hidden">← Back</button>
+        <span id="step-counter" class="text-muted text-sm">Step 1 of 3</span>
+        <button class="btn btn-primary" id="btn-next" onclick="nextStep()">Next →</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+  <script src="js/api.js"></script>
+  <script src="js/onboarding.js"></script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+services:
+  # The main FastAPI web server (serves API and Frontend)
+  - type: web
+    name: smartfarm-web
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn backend.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: smartfarm-db
+          property: connectionString
+      - key: GROQ_API_KEY
+        sync: false
+      - key: WEATHER_API_KEY
+        sync: false
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: APP_ENV
+        value: production
+
+  # The Background Worker for Telegram Polling
+  - type: worker
+    name: smartfarm-telegram-bot
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python -m backend.notifications.run_bot
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: smartfarm-db
+          property: connectionString
+      - key: GROQ_API_KEY
+        sync: false
+      - key: WEATHER_API_KEY
+        sync: false
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+
+databases:
+  - name: smartfarm-db
+    databaseName: smartfarm
+    user: smartfarm_user

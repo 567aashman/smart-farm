@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SmartFarm AI — Your Personal Farming Assistant</title>
+  <meta name="description" content="SmartFarm AI helps Indian farmers make better decisions with real-time weather, irrigation recommendations, crop calendars, and AI-powered advice.">
+  <link rel="stylesheet" href="styles/style.css">
+  <style>
+    body { overflow: hidden; }
+    .landing { display: flex; flex-direction: column; min-height: 100vh; background: var(--color-bg); }
+
+    /* Hero */
+    .hero {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 60px 24px 40px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(74,222,128,0.06) 0%, transparent 70%);
+      border-radius: 50%;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 16px;
+      background: rgba(74,222,128,0.1);
+      border: 1px solid rgba(74,222,128,0.25);
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--color-primary);
+      margin-bottom: 24px;
+    }
+    .hero h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(2.2rem, 5vw, 3.5rem);
+      font-weight: 800;
+      color: var(--color-text);
+      line-height: 1.15;
+      max-width: 700px;
+      margin-bottom: 20px;
+    }
+    .hero h1 .highlight {
+      background: linear-gradient(135deg, var(--color-primary), var(--color-sky));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero p {
+      font-size: 1.05rem;
+      color: var(--color-text-dim);
+      max-width: 520px;
+      margin-bottom: 36px;
+      line-height: 1.7;
+    }
+    .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+    .btn-xl { padding: 14px 32px; font-size: 1rem; border-radius: 14px; }
+
+    /* Features */
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
+      max-width: 900px;
+      margin: 36px auto 0;
+      width: 100%;
+    }
+    .feature {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.85rem;
+      color: var(--color-text-dim);
+      transition: var(--transition);
+    }
+    .feature:hover { border-color: var(--color-border-light); color: var(--color-text); }
+    .feature-icon { font-size: 1.3rem; flex-shrink: 0; }
+
+    /* Status */
+    .status-bar {
+      padding: 12px 24px;
+      border-top: 1px solid var(--color-border);
+      background: var(--color-surface);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      font-size: 0.78rem;
+      color: var(--color-text-muted);
+    }
+    .status-item { display: flex; align-items: center; gap: 6px; }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; }
+    .status-dot.ok { background: var(--color-primary); }
+    .status-dot.warn { background: var(--color-amber); }
+    .status-dot.error { background: var(--color-red); }
+
+    @media (max-width: 600px) {
+      body { overflow: auto; }
+      .features { grid-template-columns: 1fr 1fr; }
+      .status-bar { flex-wrap: wrap; gap: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="landing">
+    <div class="hero">
+      <div class="hero-badge">🌾 SmartFarm AI v1.0</div>
+      <h1>Your Personal<br><span class="highlight">Digital Farming Assistant</span></h1>
+      <p>
+        Real farm data + Live weather + Agricultural science → 
+        Smart recommendations for irrigation, crops, and daily farm actions.
+      </p>
+      <div class="hero-actions">
+        <button id="btn-get-started" class="btn btn-primary btn-xl" onclick="window.location.href='onboarding.html'">
+          🚀 Get Started
+        </button>
+        <button id="btn-go-dashboard" class="btn btn-secondary btn-xl" onclick="goToDashboard()">
+          📊 Open Dashboard
+        </button>
+      </div>
+
+      <div class="features">
+        <div class="feature"><span class="feature-icon">🌤️</span>Live Weather + 7-Day Forecast</div>
+        <div class="feature"><span class="feature-icon">💧</span>Smart Irrigation Reminders</div>
+        <div class="feature"><span class="feature-icon">🌱</span>Crop Recommendations</div>
+        <div class="feature"><span class="feature-icon">📅</span>Crop Growth Calendar</div>
+        <div class="feature"><span class="feature-icon">⚠️</span>Weather & Disease Risk Alerts</div>
+        <div class="feature"><span class="feature-icon">📋</span>7-Day Farm Action Plan</div>
+        <div class="feature"><span class="feature-icon">🤖</span>FarmAI — Ask Anything</div>
+        <div class="feature"><span class="feature-icon">💬</span>Telegram Notifications</div>
+        <div class="feature"><span class="feature-icon">💰</span>Mandi/Market Prices</div>
+        <div class="feature"><span class="feature-icon">📊</span>Farm Analytics</div>
+      </div>
+    </div>
+
+    <div class="status-bar" id="status-bar">
+      <div class="status-item">
+        <div class="status-dot warn" id="dot-backend"></div>
+        <span id="label-backend">Checking backend...</span>
+      </div>
+      <div class="status-item">
+        <div class="status-dot warn" id="dot-weather"></div>
+        <span id="label-weather">Weather API</span>
+      </div>
+      <div class="status-item">
+        <div class="status-dot warn" id="dot-ai"></div>
+        <span id="label-ai">AI Assistant</span>
+      </div>
+      <div class="status-item">
+        <div class="status-dot warn" id="dot-telegram"></div>
+        <span id="label-telegram">Telegram</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+  <script src="js/api.js"></script>
+  <script>
+    function goToDashboard() {
+      if (State.isLoggedIn()) {
+        window.location.href = 'dashboard.html';
+      } else {
+        showToast('Please set up your farm first.', 'info');
+        setTimeout(() => window.location.href = 'onboarding.html', 1500);
+      }
+    }
+
+    async function checkHealth() {
+      try {
+        const h = await API.health();
+        const setStatus = (id, labelId, status, text) => {
+          document.getElementById(id).className = `status-dot ${status}`;
+          document.getElementById(labelId).textContent = text;
+        };
+        setStatus('dot-backend', 'label-backend', h.database === 'ok' ? 'ok' : 'warn',
+          h.database === 'ok' ? '✅ Backend Connected' : '⚠️ DB Issue');
+        setStatus('dot-weather', 'label-weather', h.weather_api === 'configured' ? 'ok' : 'warn',
+          h.weather_api === 'configured' ? '✅ Weather API' : '⚠️ Weather: Add API key');
+        setStatus('dot-ai', 'label-ai', h.groq_api === 'configured' ? 'ok' : 'warn',
+          h.groq_api === 'configured' ? '✅ FarmAI Ready' : '⚠️ AI: Add Groq key');
+        setStatus('dot-telegram', 'label-telegram', h.telegram === 'configured' ? 'ok' : 'warn',
+          h.telegram === 'configured' ? '✅ Telegram' : '⚠️ Telegram: Add bot token');
+      } catch (e) {
+        document.getElementById('dot-backend').className = 'status-dot error';
+        document.getElementById('label-backend').textContent = '❌ Backend offline — start uvicorn';
+      }
+    }
+
+    checkHealth();
+  </script>
+</body>
+</html>

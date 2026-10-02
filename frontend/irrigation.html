@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SmartFarm AI — Irrigation</title>
+  <link rel="stylesheet" href="styles/style.css">
+</head>
+<body>
+  <div class="app-layout">
+    <nav class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <h1><span class="logo-icon">🌾</span> SmartFarm AI</h1>
+        <p>Agricultural Intelligence</p>
+      </div>
+      <div class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-section-label">Farm</div>
+          <a class="nav-item" href="dashboard.html"><span class="nav-icon">📊</span> Dashboard</a>
+          <a class="nav-item" href="crops.html"><span class="nav-icon">🌱</span> My Crops</a>
+          <a class="nav-item active" href="irrigation.html"><span class="nav-icon">💧</span> Irrigation</a>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-label">Insights</div>
+          <a class="nav-item" href="farm-ai.html"><span class="nav-icon">🤖</span> FarmAI</a>
+        </div>
+      </div>
+      <div class="sidebar-footer">
+        <div class="farm-info">
+          <div class="farm-avatar">🏡</div>
+          <div>
+            <div class="font-semibold" id="sb-farm-name" style="font-size:0.82rem;color:var(--color-text)">My Farm</div>
+          </div>
+        </div>
+      </div>
+    </nav>
+    <button class="sidebar-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+
+    <div class="main-content">
+      <div class="page-header">
+        <div>
+          <h2>💧 Irrigation</h2>
+          <div class="header-subtitle">Smart irrigation recommendations and logging</div>
+        </div>
+        <div class="header-actions">
+          <button class="btn btn-primary" onclick="logManualIrrigation()">💧 Log Irrigation</button>
+          <button class="btn btn-secondary btn-sm" onclick="loadAll()">🔄 Refresh</button>
+        </div>
+      </div>
+
+      <div class="page-body">
+        <!-- Recommendation -->
+        <div class="grid-2 mb-6">
+          <div id="irr-rec-section">
+            <div class="skeleton" style="height:250px;border-radius:16px"></div>
+          </div>
+          <div id="irr-weather-section">
+            <div class="skeleton" style="height:250px;border-radius:16px"></div>
+          </div>
+        </div>
+
+        <!-- History -->
+        <div class="card mb-6">
+          <div class="card-header">
+            <div class="card-title"><span class="card-icon">📋</span> Irrigation History</div>
+          </div>
+          <div id="irr-history">
+            <div class="skeleton" style="height:150px;border-radius:8px"></div>
+          </div>
+        </div>
+
+        <!-- Monsoon Tracker -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><span class="card-icon">🌧️</span> Monsoon Tracker</div>
+            <span class="badge badge-sky">Live Forecast</span>
+          </div>
+          <div id="monsoon-section">
+            <div class="skeleton" style="height:200px;border-radius:8px"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+  <script src="js/api.js"></script>
+  <script src="js/irrigation.js"></script>
+</body>
+</html>

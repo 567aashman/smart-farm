@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SmartFarm AI — My Crops</title>
+  <link rel="stylesheet" href="styles/style.css">
+</head>
+<body>
+  <div class="app-layout">
+    <nav class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <h1><span class="logo-icon">🌾</span> SmartFarm AI</h1>
+        <p>Agricultural Intelligence</p>
+      </div>
+      <div class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-section-label">Farm</div>
+          <a class="nav-item" href="dashboard.html"><span class="nav-icon">📊</span> Dashboard</a>
+          <a class="nav-item active" href="crops.html"><span class="nav-icon">🌱</span> My Crops</a>
+          <a class="nav-item" href="irrigation.html"><span class="nav-icon">💧</span> Irrigation</a>
+        </div>
+        <div class="nav-section">
+          <div class="nav-section-label">Insights</div>
+          <a class="nav-item" href="farm-ai.html"><span class="nav-icon">🤖</span> FarmAI</a>
+        </div>
+      </div>
+      <div class="sidebar-footer">
+        <div class="farm-info">
+          <div class="farm-avatar">🏡</div>
+          <div>
+            <div class="font-semibold" id="sb-farm-name" style="font-size:0.82rem;color:var(--color-text)">My Farm</div>
+          </div>
+        </div>
+      </div>
+    </nav>
+    <button class="sidebar-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+
+    <div class="main-content">
+      <div class="page-header">
+        <div>
+          <h2>🌱 My Crops</h2>
+          <div class="header-subtitle">Crop management, calendars, and stage tracking</div>
+        </div>
+        <div class="header-actions">
+          <button class="btn btn-primary" onclick="showAddCropModal()">+ Add Crop</button>
+        </div>
+      </div>
+
+      <div class="page-body">
+        <div class="tabs">
+          <button class="tab active" id="tab-active" onclick="switchTab('active')">Active Crops</button>
+          <button class="tab" id="tab-recommendations" onclick="switchTab('recommendations')">Recommendations</button>
+          <button class="tab" id="tab-catalog" onclick="switchTab('catalog')">Crop Catalog</button>
+        </div>
+
+        <!-- Active Crops Tab -->
+        <div id="panel-active">
+          <div id="crops-grid">
+            <div class="grid-auto">
+              <div class="skeleton" style="height:200px;border-radius:16px"></div>
+              <div class="skeleton" style="height:200px;border-radius:16px"></div>
+              <div class="skeleton" style="height:200px;border-radius:16px"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recommendations Tab -->
+        <div id="panel-recommendations" class="hidden">
+          <div id="rec-content">
+            <div class="skeleton" style="height:300px;border-radius:16px"></div>
+          </div>
+        </div>
+
+        <!-- Catalog Tab -->
+        <div id="panel-catalog" class="hidden">
+          <div id="catalog-content">
+            <div class="skeleton" style="height:300px;border-radius:16px"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Crop Modal -->
+  <div class="modal-overlay hidden" id="add-crop-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <span class="modal-title">🌱 Add New Crop</span>
+        <button class="modal-close" onclick="closeModal('add-crop-modal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Crop *</label>
+          <select class="form-control" id="new-crop-name">
+            <option value="">Select crop</option>
+            <option>Wheat</option><option>Rice</option><option>Maize</option><option>Mustard</option>
+            <option>Potato</option><option>Tomato</option><option>Cotton</option><option>Sugarcane</option>
+            <option>Chickpea</option><option>Soybean</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Variety</label>
+            <input class="form-control" id="new-crop-variety" type="text" placeholder="e.g. HD 2967">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Area (Acres) *</label>
+            <input class="form-control" id="new-crop-area" type="number" min="0.1" step="0.1" placeholder="e.g. 2">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Field Name</label>
+            <input class="form-control" id="new-field-name" type="text" placeholder="e.g. East Plot">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Sowing Date</label>
+            <input class="form-control" id="new-sowing-date" type="date">
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" onclick="closeModal('add-crop-modal')">Cancel</button>
+        <button class="btn btn-primary" id="btn-save-crop" onclick="saveCrop()">Save Crop</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Calendar Modal -->
+  <div class="modal-overlay hidden" id="calendar-modal">
+    <div class="modal" style="max-width:600px">
+      <div class="modal-header">
+        <span class="modal-title">📅 Crop Calendar</span>
+        <button class="modal-close" onclick="closeModal('calendar-modal')">✕</button>
+      </div>
+      <div class="modal-body" id="calendar-modal-body"></div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+  <script src="js/api.js"></script>
+  <script src="js/crops.js"></script>
+</body>
+</html>
