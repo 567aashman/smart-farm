@@ -35,7 +35,7 @@ class Settings(BaseSettings):
     weather_api_base: str = "https://api.openweathermap.org/data/2.5"
 
     # Telegram
-    telegram_bot_token: str = ""
+    telegram_bot_token: str = "8745384355:AAHkQ8vlGx2iJy77mGiW8SWZBid7Uj_FIEg"
     telegram_bot_username: str = ""
 
     # App
