@@ -321,13 +321,8 @@ async function markHarvested(cropId) {
   if(!confirm("Mark this crop as harvested?")) return;
   try {
     await API.updateCrop(cropId, { status: "harvested" });
-    await loadActiveCrops();
-  } catch (e) {
-    alert("Failed to mark as harvested: " + e.message);
-  }
-});
     showToast('Crop marked as harvested!', 'success');
-    loadActiveCrops();
+    await loadActiveCrops();
   } catch (e) {
     showToast(e.message, 'error');
   }
