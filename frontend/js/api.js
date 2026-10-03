@@ -272,7 +272,7 @@ function requireAuth(redirectTo = 'onboarding.html') {
     document.body.appendChild(gtScript);
 
     const style = document.createElement('style');
-    style.innerHTML = ".goog-te-banner-frame.skiptranslate { display: none !important; } body { top: 0px !important; } #goog-gt-tt { display: none !important; top: 0px !important; } .goog-tooltip, .goog-tooltip:hover { display: none !important; }";
+    style.innerHTML = " html { height: 100%; margin: 0 !important; padding: 0 !important; } body { position: static !important; top: 0px !important; min-height: 100% !important; } iframe.goog-te-banner-frame { display: none !important; } .goog-te-banner-frame.skiptranslate { display: none !important; } #goog-gt-tt { display: none !important; } .goog-tooltip { display: none !important; } .goog-tooltip:hover { display: none !important; } .goog-text-highlight { background-color: transparent !important; box-shadow: none !important; } ";
     document.head.appendChild(style);
 })();
 
@@ -282,7 +282,11 @@ window.changeWebsiteLanguage = function(langCode) {
         selectField.value = langCode;
         selectField.dispatchEvent(new Event('change'));
     } else {
-        setTimeout(() => window.changeWebsiteLanguage(langCode), 500);
+        if (!window._gtRetries) window._gtRetries = 0;
+        if (window._gtRetries < 10) {
+            window._gtRetries++;
+            setTimeout(() => window.changeWebsiteLanguage(langCode), 500);
+        }
     }
     const shyamToggle = document.getElementById("shyamLangToggle");
     if (shyamToggle) shyamToggle.value = langCode;
