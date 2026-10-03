@@ -280,6 +280,7 @@ async def chat_with_farmai(payload: AskShyamRequest, db: Session = Depends(get_d
             conversation_history=payload.conversation_history,
             weather_service=weather_service,
             market_service=market_service,
+            image_base64=payload.image_base64,
         )
         return result
     except AskShyamError as e:

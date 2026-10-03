@@ -78,6 +78,7 @@ class AskShyamAgent:
         conversation_history: Optional[List[Dict[str, str]]] = None,
         weather_service=None,
         market_service=None,
+        image_base64: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
         Process a user message through Groq with tool calling.
@@ -95,6 +96,34 @@ class AskShyamAgent:
         if conversation_history:
             messages.extend(conversation_history[-10:])
 
+
+        if image_base64:
+            try:
+                # Add data URI prefix if missing
+                if not image_base64.startswith("data:image"):
+                    image_base64 = f"data:image/jpeg;base64,{image_base64}"
+                    
+                vision_messages = [
+                    {
+                        "role": "user",
+                        "content": [
+                            {"type": "text", "text": f"The user has uploaded this image of their farm/crop along with the following message: '{user_message}'. Please describe the image in detail and identify any visible issues (diseases, pests, nutrient deficiencies, etc.) so that an agricultural expert system can use your description to provide advice."},
+                            {"type": "image_url", "image_url": {"url": image_base64}}
+                        ]
+                    }
+                ]
+                logger.info("Analyzing image with llama-3.2-11b-vision-preview...")
+                vision_resp = client.chat.completions.create(
+                    model="llama-3.2-11b-vision-preview",
+                    messages=vision_messages,
+                    max_tokens=1024,
+                )
+                image_description = vision_resp.choices[0].message.content
+                user_message += f"\n\n[Image Uploaded by User. AI Vision Analysis: {image_description}]"
+            except Exception as e:
+                logger.error(f"Vision API error: {e}")
+                user_message += "\n\n[Image Uploaded by User, but the Vision AI failed to analyze it.]"
+
         # Inject farm context
         context_msg = f"[Context: The user's farm_id is {farm_id}. Use this for all tool calls.]"
         messages.append({"role": "user", "content": f"{context_msg}\n\n{user_message}"})
@@ -108,7 +137,7 @@ class AskShyamAgent:
             logger.info(f"Ask Shyam round {round_num + 1}, messages={len(messages)}")
 
             response = client.chat.completions.create(
-                model="openai/gpt-oss-120b",
+                model="llama-3.1-70b-versatile",
                 messages=messages,
                 tools=TOOL_DEFINITIONS,
                 tool_choice="auto",
@@ -170,7 +199,7 @@ class AskShyamAgent:
         # If we hit the max rounds, get a final answer anyway
         logger.warning("Ask Shyam reached max tool rounds — forcing final response")
         final_resp = client.chat.completions.create(
-            model="openai/gpt-oss-120b",
+            model="llama-3.1-70b-versatile",
             messages=messages + [{"role": "user", "content": "Please provide your final answer based on the data gathered."}],
             max_tokens=512,
             temperature=0.3,

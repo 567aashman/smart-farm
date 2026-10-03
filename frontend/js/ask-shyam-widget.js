@@ -211,7 +211,13 @@ document.addEventListener("DOMContentLoaded", () => {
                     Namaste! 🙏 I am Shyam. Ask me anything about your farm, weather, or crops!
                 </div>
             </div>
+            <div id="shyamImagePreviewContainer" style="display:none; padding:0 14px 10px 14px; background:var(--color-surface); position:relative;">
+                <img id="shyamImagePreview" src="" style="max-height:80px; border-radius:8px; border:1px solid var(--color-border);">
+                <button id="shyamImageClearBtn" style="position:absolute; top:-5px; left:5px; background:red; color:white; border:none; border-radius:50%; width:20px; height:20px; cursor:pointer; font-size:12px;">✕</button>
+            </div>
             <div class="shyam-chat-footer">
+                <input type="file" id="shyamImageUpload" accept="image/*" style="display:none;">
+                <button id="shyamAttachBtn" style="background:none; border:none; font-size:1.2rem; cursor:pointer; color:var(--color-text-muted);" title="Upload Image">📷</button>
                 <input type="text" class="shyam-chat-input" id="shyamInput" placeholder="Type your question here...">
                 <button class="shyam-chat-send" id="shyamSendBtn">➤</button>
             </div>
@@ -231,6 +237,35 @@ document.addEventListener("DOMContentLoaded", () => {
     const sendBtn = document.getElementById("shyamSendBtn");
     const chatBody = document.getElementById("shyamChatBody");
     
+    
+    const attachBtn = document.getElementById("shyamAttachBtn");
+    const imageUpload = document.getElementById("shyamImageUpload");
+    const previewContainer = document.getElementById("shyamImagePreviewContainer");
+    const previewImg = document.getElementById("shyamImagePreview");
+    const clearBtn = document.getElementById("shyamImageClearBtn");
+    
+    let currentImageBase64 = null;
+
+    attachBtn.addEventListener("click", () => imageUpload.click());
+    
+    imageUpload.addEventListener("change", (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            currentImageBase64 = ev.target.result; // contains 'data:image/...;base64,...'
+            previewImg.src = currentImageBase64;
+            previewContainer.style.display = "block";
+        };
+        reader.readAsDataURL(file);
+    });
+    
+    clearBtn.addEventListener("click", () => {
+        currentImageBase64 = null;
+        imageUpload.value = "";
+        previewContainer.style.display = "none";
+    });
+
     let chatHistory = [];
 
     function toggleChat() {
@@ -266,7 +301,13 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        addMessage(text, "user");
+        
+        let msgHtml = text;
+        if (currentImageBase64) {
+            msgHtml = <img src="" style="max-width:100%; border-radius:8px; margin-bottom:8px; display:block;"><br> + msgHtml;
+        }
+        addMessage(msgHtml, "user");
+
         input.value = "";
         
         const loadingId = "load-" + Date.now();
@@ -278,7 +319,16 @@ document.addEventListener("DOMContentLoaded", () => {
         chatBody.scrollTop = chatBody.scrollHeight;
 
         try {
-            const data = await API.chatWithAI(State.userId, State.farmId, text, chatHistory);
+            
+            // Only send the base64 part, not the prefix for the API (backend adds it if needed, or we just send it as is)
+            const b64Data = currentImageBase64 ? currentImageBase64.split(',')[1] : null;
+            const data = await API.chatWithAI(State.userId, State.farmId, text, chatHistory, b64Data);
+            
+            // Clear image after sending
+            if (currentImageBase64) {
+                clearBtn.click();
+            }
+
             document.getElementById(loadingId).remove();
             
             chatHistory.push({ role: "user", content: text });

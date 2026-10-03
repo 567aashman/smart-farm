@@ -118,9 +118,9 @@ const API = {
   getActionPlan: (farmId) => apiFetch(`/plan/farm/${farmId}`),
 
   // Ask Shyam
-  chatWithAI: (userId, farmId, message, history = []) => apiFetch('/ai/chat', {
+  chatWithAI: (userId, farmId, message, history = [], image_base64 = null) => apiFetch('/ai/chat', {
     method: 'POST',
-    body: { user_id: userId, farm_id: farmId, message, conversation_history: history }
+    body: { user_id: userId, farm_id: farmId, message, conversation_history: history, image_base64: image_base64 }
   }),
 
   // Market

@@ -410,6 +410,7 @@ class AskShyamRequest(BaseModel):
     user_id: int
     farm_id: int
     message: str = Field(..., min_length=1, max_length=2000)
+    image_base64: Optional[str] = None
     conversation_history: Optional[List[Dict[str, str]]] = []
 
 
