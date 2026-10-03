@@ -311,6 +311,7 @@ async def chat_with_farmai(payload: AskShyamRequest, db: Session = Depends(get_d
             weather_service=weather_service,
             market_service=market_service,
             image_base64=payload.image_base64,
+            language=payload.language,
         )
         
         # 3. Generate Audio Output if requested
@@ -321,7 +322,7 @@ async def chat_with_farmai(payload: AskShyamRequest, db: Session = Depends(get_d
             import os
             try:
                 # Use a masculine Hindi voice (MadhurNeural)
-                voice = "hi-IN-MadhurNeural"
+                voice = "en-IN-PrabhatNeural" if payload.language == "en" else "hi-IN-MadhurNeural"
                 communicate = edge_tts.Communicate(result["reply"], voice)
                 
                 with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as tf:

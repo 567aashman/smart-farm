@@ -79,6 +79,7 @@ class AskShyamAgent:
         weather_service=None,
         market_service=None,
         image_base64: Optional[str] = None,
+        language: str = "hi",
     ) -> Dict[str, Any]:
         """
         Process a user message through Groq with tool calling.
@@ -95,6 +96,11 @@ class AskShyamAgent:
         # Add conversation history (last 10 turns)
         if conversation_history:
             messages.extend(conversation_history[-10:])
+            
+        # Enforce language
+        lang_name = "English" if language == "en" else "Hindi"
+        messages.append({"role": "system", "content": f"CRITICAL: The user has selected {lang_name}. You MUST reply entirely in {lang_name}."})
+
 
 
         if image_base64:
