@@ -272,8 +272,38 @@ async def get_action_plan(farm_id: int, db: Session = Depends(get_db)):
 @ai_router.post("/chat")
 async def chat_with_farmai(payload: AskShyamRequest, db: Session = Depends(get_db)):
     try:
+        user_message = payload.message or ""
+        
+        # 1. Process Voice Input if provided
+        if payload.voice_base64:
+            import tempfile
+            import base64
+            from groq import Groq
+            from backend.config import settings
+            import os
+            
+            # Decode audio
+            audio_data = base64.b64decode(payload.voice_base64)
+            with tempfile.NamedTemporaryFile(delete=False, suffix=".webm") as tf:
+                tf.write(audio_data)
+                temp_path = tf.name
+            
+            try:
+                client = Groq(api_key=settings.groq_api_key)
+                with open(temp_path, "rb") as file:
+                    transcription = client.audio.transcriptions.create(
+                        file=(os.path.basename(temp_path), file.read()),
+                        model="whisper-large-v3-turbo",
+                        response_format="text",
+                    )
+                user_message = str(transcription).strip() + " " + user_message
+            finally:
+                if os.path.exists(temp_path):
+                    os.remove(temp_path)
+        
+        # 2. Get AI Response
         result = await ask_shyam_agent.chat(
-            user_message=payload.message,
+            user_message=user_message.strip() or "Hello",
             farm_id=payload.farm_id,
             user_id=payload.user_id,
             db=db,
@@ -282,6 +312,22 @@ async def chat_with_farmai(payload: AskShyamRequest, db: Session = Depends(get_d
             market_service=market_service,
             image_base64=payload.image_base64,
         )
+        
+        # 3. Generate Audio Output if requested
+        if payload.generate_audio:
+            from gtts import gTTS
+            import io
+            import base64
+            try:
+                tts = gTTS(text=result["reply"], lang="hi") # Default to hindi for now
+                fp = io.BytesIO()
+                tts.write_to_fp(fp)
+                fp.seek(0)
+                audio_b64 = base64.b64encode(fp.read()).decode("utf-8")
+                result["audio_base64"] = audio_b64
+            except Exception as e:
+                logger.error(f"TTS error: {e}")
+                
         return result
     except AskShyamError as e:
         raise HTTPException(status_code=503, detail=f"Ask Shyam is temporarily unavailable: {str(e)}")

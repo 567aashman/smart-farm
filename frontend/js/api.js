@@ -130,9 +130,17 @@ const API = {
   getActionPlan: (farmId) => apiFetch(`/plan/farm/${farmId}`),
 
   // Ask Shyam
-  chatWithAI: (userId, farmId, message, history = [], image_base64 = null) => apiFetch('/ai/chat', {
+  chatWithAI: (userId, farmId, message, history = [], image_base64 = null, voice_base64 = null) => apiFetch('/ai/chat', {
     method: 'POST',
-    body: { user_id: userId, farm_id: farmId, message, conversation_history: history, image_base64: image_base64 }
+    body: { 
+      user_id: userId, 
+      farm_id: farmId, 
+      message, 
+      conversation_history: history, 
+      image_base64: image_base64,
+      voice_base64: voice_base64,
+      generate_audio: !!voice_base64 // only generate audio if voice was sent
+    }
   }),
 
   // Market

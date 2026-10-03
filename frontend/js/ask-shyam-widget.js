@@ -218,7 +218,8 @@ document.addEventListener("DOMContentLoaded", () => {
             <div class="shyam-chat-footer">
                 <input type="file" id="shyamImageUpload" accept="image/*" style="display:none;">
                 <button id="shyamAttachBtn" style="background:none; border:none; font-size:1.2rem; cursor:pointer; color:var(--color-text-muted);" title="Upload Image">📷</button>
-                <input type="text" class="shyam-chat-input" id="shyamInput" placeholder="Type your question here...">
+                <button id="shyamMicBtn" style="background:none; border:none; font-size:1.2rem; cursor:pointer; color:var(--color-text-muted);" title="Voice Input">🎤</button>
+                <input type="text" class="shyam-chat-input" id="shyamInput" placeholder="Type or speak here...">
                 <button class="shyam-chat-send" id="shyamSendBtn">➤</button>
             </div>
         </div>
@@ -264,6 +265,53 @@ document.addEventListener("DOMContentLoaded", () => {
         currentImageBase64 = null;
         imageUpload.value = "";
         previewContainer.style.display = "none";
+    });
+
+    
+    const micBtn = document.getElementById("shyamMicBtn");
+    let mediaRecorder = null;
+    let audioChunks = [];
+    let isRecording = false;
+    let currentVoiceBase64 = null;
+    
+    micBtn.addEventListener("click", async () => {
+        if (isRecording) {
+            mediaRecorder.stop();
+            micBtn.style.color = "var(--color-text-muted)";
+            micBtn.textContent = "🎤";
+            isRecording = false;
+        } else {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks = [];
+                
+                mediaRecorder.addEventListener("dataavailable", event => {
+                    audioChunks.push(event.data);
+                });
+                
+                mediaRecorder.addEventListener("stop", () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                        currentVoiceBase64 = reader.result.split(',')[1];
+                        // Auto-send when recording stops
+                        handleSend();
+                    };
+                    reader.readAsDataURL(audioBlob);
+                    
+                    // Stop tracks
+                    stream.getTracks().forEach(track => track.stop());
+                });
+                
+                mediaRecorder.start();
+                micBtn.style.color = "red";
+                micBtn.textContent = "⏹️";
+                isRecording = true;
+            } catch (err) {
+                alert("Microphone access denied or unavailable.");
+            }
+        }
     });
 
     let chatHistory = [];
@@ -326,7 +374,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     async function handleSend() {
         const text = input.value.trim();
-        if (!text) return;
+        if (!text && !currentVoiceBase64) return;
         
         if (!State.isLoggedIn()) {
             addMessage("Please log in to use Ask Shyam.", "bot", true);
@@ -334,7 +382,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         
-        let msgHtml = text;
+        let msgHtml = text || "🎤 <i>Voice Note</i>";
         if (currentImageBase64) {
             msgHtml = `<img src="${currentImageBase64}" style="max-width:100%; border-radius:8px; margin-bottom:8px; display:block;"><br>` + msgHtml;
         }
@@ -354,7 +402,16 @@ document.addEventListener("DOMContentLoaded", () => {
             
             // Only send the base64 part, not the prefix for the API (backend adds it if needed, or we just send it as is)
             const b64Data = currentImageBase64 ? currentImageBase64.split(',')[1] : null;
-            const data = await API.chatWithAI(State.userId, State.farmId, text, chatHistory, b64Data);
+            
+            const data = await API.chatWithAI(State.userId, State.farmId, text, chatHistory, b64Data, currentVoiceBase64);
+            currentVoiceBase64 = null; // Reset
+            
+            // Play audio if generated
+            if (data.audio_base64) {
+                const audio = new Audio("data:audio/mp3;base64," + data.audio_base64);
+                audio.play().catch(e => console.log("Audio play blocked by browser", e));
+            }
+
             
             // Clear image after sending
             if (currentImageBase64) {

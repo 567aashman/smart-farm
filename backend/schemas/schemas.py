@@ -409,8 +409,10 @@ class ActionPlanResponse(BaseModel):
 class AskShyamRequest(BaseModel):
     user_id: int
     farm_id: int
-    message: str = Field(..., min_length=1, max_length=2000)
+    message: Optional[str] = Field(default=None, max_length=2000)
     image_base64: Optional[str] = None
+    voice_base64: Optional[str] = None
+    generate_audio: bool = False
     conversation_history: Optional[List[Dict[str, str]]] = []
 
 
