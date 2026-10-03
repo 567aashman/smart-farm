@@ -191,12 +191,12 @@
                 height: 52px;
             }
         }
-    \;
+    ;
     document.head.appendChild(style);
 
     // Inject HTML
     const widgetContainer = document.createElement("div");
-    widgetContainer.innerHTML = \
+    widgetContainer.innerHTML = 
         <div class="shyam-chat-popup" id="shyamChatPopup">
             <div class="shyam-chat-header">
                 <img src="img/ask_shyam.jpg" alt="Ask Shyam">
@@ -220,7 +220,7 @@
         <div class="shyam-widget-btn" id="shyamWidgetBtn" title="Ask Shyam">
             <img src="img/ask_shyam.jpg" class="shyam-widget-avatar" alt="Ask Shyam">
         </div>
-    \;
+    ;
     document.body.appendChild(widgetContainer);
 
     // Logic
@@ -245,12 +245,12 @@
 
     function addMessage(text, sender) {
         const msgDiv = document.createElement("div");
-        msgDiv.className = \shyam-msg \\;
+        msgDiv.className = 'shyam-msg ' + sender;
         
         let formattedText = text
-            .replace(/\\*\\*(.*?)\\*\\*/g, '<strong></strong>')
-            .replace(/\\*(.*?)\\*/g, '<em></em>')
-            .replace(/\\n/g, '<br>');
+            .replace(/\*\*(.*?)\*\*/g, '<strong></strong>')
+            .replace(/\*(.*?)\*/g, '<em></em>')
+            .replace(/\n/g, '<br>');
             
         msgDiv.innerHTML = formattedText;
         chatBody.appendChild(msgDiv);
