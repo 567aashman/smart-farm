@@ -49,12 +49,9 @@
         </div>
       </div>
       
-        <div style="padding: 10px 16px; display:flex; align-items:center; justify-content:space-between; border-top:1px solid var(--color-border); margin-top:10px;" class="skiptranslate">
-            <span style="font-size:0.95rem; font-weight:bold; color:var(--color-text);">🌐 English / हिंदी</span>
-            <label class="lang-switch">
-                <input type="checkbox" class="globalLangToggleCheckbox" onchange="changeWebsiteLanguage(this.checked ? 'hi' : 'en')">
-                <span class="lang-slider"></span>
-            </label>
+        <div class="lang-segmented-control skiptranslate" style="margin: 10px 16px;">
+            <button class="lang-segment btn-en" onclick="changeWebsiteLanguage('en')">English</button>
+            <button class="lang-segment btn-hi" onclick="changeWebsiteLanguage('hi')">हिंदी</button>
         </div>
       <div class="sidebar-footer">
         <div class="farm-info">
@@ -205,6 +202,6 @@
   <div id="toast-container"></div>
   <script src="js/api.js"></script>
   <script src="js/dashboard.js"></script>
-  <script src="js/ask-shyam-widget.js?v=12"></script>
+  <script src="js/ask-shyam-widget.js?v=13"></script>
 </body>
 </html>

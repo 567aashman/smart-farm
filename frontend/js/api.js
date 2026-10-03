@@ -290,13 +290,19 @@ window.changeWebsiteLanguage = function(langCode) {
     }
     const shyamToggle = document.getElementById("shyamLangToggle");
     if (shyamToggle) shyamToggle.value = langCode;
+    const btnEn = document.querySelectorAll('.btn-en');
+    const btnHi = document.querySelectorAll('.btn-hi');
+    btnEn.forEach(b => b.classList.toggle('active', langCode === 'en'));
+    btnHi.forEach(b => b.classList.toggle('active', langCode === 'hi'));
 };
 
 document.addEventListener("DOMContentLoaded", () => {
     let currentLang = 'en';
     const match = document.cookie.match(/googtrans=\/en\/([a-z]{2})/);
     if (match) currentLang = match[1];
-    const checkboxes = document.querySelectorAll('.globalLangToggleCheckbox');
-    checkboxes.forEach(c => c.checked = (currentLang === 'hi'));
+    const btnEn = document.querySelectorAll('.btn-en');
+    const btnHi = document.querySelectorAll('.btn-hi');
+    btnEn.forEach(b => b.classList.toggle('active', currentLang === 'en'));
+    btnHi.forEach(b => b.classList.toggle('active', currentLang === 'hi'));
 });
 // ──────────────────────────────────────
