@@ -1,0 +1,298 @@
+﻿document.addEventListener("DOMContentLoaded", () => {
+    // Inject CSS
+    const style = document.createElement("style");
+    style.innerHTML = 
+        /* Ask Shyam Widget Styles */
+        .shyam-widget-btn {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 70px;
+            height: 70px;
+            border-radius: 35px;
+            background-color: var(--color-primary);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            cursor: pointer;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            animation: bounceIn 0.8s ease;
+        }
+        .shyam-widget-btn:hover {
+            transform: scale(1.08);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+        }
+        .shyam-widget-avatar {
+            width: 62px;
+            height: 62px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid white;
+        }
+        
+        .shyam-chat-popup {
+            position: fixed;
+            bottom: 110px;
+            right: 24px;
+            width: 380px;
+            height: 550px;
+            max-height: calc(100vh - 140px);
+            background: var(--color-surface);
+            border-radius: 16px;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            z-index: 9998;
+            overflow: hidden;
+            transform: translateY(30px);
+            opacity: 0;
+            pointer-events: none;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
+        }
+        
+        .shyam-chat-popup.open {
+            transform: translateY(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        .shyam-chat-header {
+            background: var(--color-primary);
+            color: white;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .shyam-chat-header img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.6);
+            object-fit: cover;
+        }
+        .shyam-chat-header-info {
+            flex-grow: 1;
+        }
+        .shyam-chat-header-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin: 0;
+            line-height: 1.2;
+        }
+        .shyam-chat-header-subtitle {
+            font-size: 0.8rem;
+            opacity: 0.9;
+        }
+        .shyam-chat-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 4px;
+        }
+        
+        .shyam-chat-body {
+            flex-grow: 1;
+            padding: 16px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background-color: var(--color-background);
+        }
+        
+        .shyam-msg {
+            max-width: 85%;
+            padding: 12px 16px;
+            border-radius: 16px;
+            font-size: 0.95rem;
+            line-height: 1.4;
+            animation: fadeIn 0.3s ease;
+        }
+        .shyam-msg.bot {
+            background-color: var(--color-surface);
+            border: 1px solid var(--color-border);
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+        .shyam-msg.user {
+            background-color: var(--color-primary);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+        
+        .shyam-chat-footer {
+            padding: 14px;
+            background: var(--color-surface);
+            border-top: 1px solid var(--color-border);
+            display: flex;
+            gap: 10px;
+        }
+        .shyam-chat-input {
+            flex-grow: 1;
+            border: 1px solid var(--color-border);
+            border-radius: 20px;
+            padding: 10px 16px;
+            outline: none;
+            font-size: 0.95rem;
+        }
+        .shyam-chat-input:focus {
+            border-color: var(--color-primary);
+        }
+        .shyam-chat-send {
+            background: var(--color-primary);
+            color: white;
+            border: none;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+        .shyam-chat-send:hover {
+            opacity: 0.9;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes bounceIn {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        @media (max-width: 768px) {
+            .shyam-chat-popup {
+                bottom: 0;
+                right: 0;
+                width: 100%;
+                height: 100%;
+                max-height: 100vh;
+                border-radius: 0;
+            }
+            .shyam-widget-btn {
+                bottom: 16px;
+                right: 16px;
+                width: 60px;
+                height: 60px;
+            }
+            .shyam-widget-avatar {
+                width: 52px;
+                height: 52px;
+            }
+        }
+    \;
+    document.head.appendChild(style);
+
+    // Inject HTML
+    const widgetContainer = document.createElement("div");
+    widgetContainer.innerHTML = \
+        <div class="shyam-chat-popup" id="shyamChatPopup">
+            <div class="shyam-chat-header">
+                <img src="img/ask_shyam.jpg" alt="Ask Shyam">
+                <div class="shyam-chat-header-info">
+                    <div class="shyam-chat-header-title">Ask Shyam</div>
+                    <div class="shyam-chat-header-subtitle">Your AI Farming Expert</div>
+                </div>
+                <button class="shyam-chat-close" id="shyamCloseBtn">✕</button>
+            </div>
+            <div class="shyam-chat-body" id="shyamChatBody">
+                <div class="shyam-msg bot">
+                    Namaste! 🙏 I am Shyam. Ask me anything about your farm, weather, or crops!
+                </div>
+            </div>
+            <div class="shyam-chat-footer">
+                <input type="text" class="shyam-chat-input" id="shyamInput" placeholder="Type your question here...">
+                <button class="shyam-chat-send" id="shyamSendBtn">➤</button>
+            </div>
+        </div>
+        
+        <div class="shyam-widget-btn" id="shyamWidgetBtn" title="Ask Shyam">
+            <img src="img/ask_shyam.jpg" class="shyam-widget-avatar" alt="Ask Shyam">
+        </div>
+    \;
+    document.body.appendChild(widgetContainer);
+
+    // Logic
+    const widgetBtn = document.getElementById("shyamWidgetBtn");
+    const popup = document.getElementById("shyamChatPopup");
+    const closeBtn = document.getElementById("shyamCloseBtn");
+    const input = document.getElementById("shyamInput");
+    const sendBtn = document.getElementById("shyamSendBtn");
+    const chatBody = document.getElementById("shyamChatBody");
+    
+    let chatHistory = [];
+
+    function toggleChat() {
+        popup.classList.toggle("open");
+        if (popup.classList.contains("open")) {
+            input.focus();
+        }
+    }
+
+    widgetBtn.addEventListener("click", toggleChat);
+    closeBtn.addEventListener("click", toggleChat);
+
+    function addMessage(text, sender) {
+        const msgDiv = document.createElement("div");
+        msgDiv.className = \shyam-msg \\;
+        
+        let formattedText = text
+            .replace(/\\*\\*(.*?)\\*\\*/g, '<strong></strong>')
+            .replace(/\\*(.*?)\\*/g, '<em></em>')
+            .replace(/\\n/g, '<br>');
+            
+        msgDiv.innerHTML = formattedText;
+        chatBody.appendChild(msgDiv);
+        chatBody.scrollTop = chatBody.scrollHeight;
+    }
+
+    async function handleSend() {
+        const text = input.value.trim();
+        if (!text) return;
+        
+        if (!State.isLoggedIn()) {
+            addMessage("Please log in to use Ask Shyam.", "bot");
+            return;
+        }
+
+        addMessage(text, "user");
+        input.value = "";
+        
+        const loadingId = "load-" + Date.now();
+        const loadingDiv = document.createElement("div");
+        loadingDiv.className = "shyam-msg bot";
+        loadingDiv.id = loadingId;
+        loadingDiv.innerHTML = '<span style="opacity:0.6">Thinking...</span>';
+        chatBody.appendChild(loadingDiv);
+        chatBody.scrollTop = chatBody.scrollHeight;
+
+        try {
+            const data = await API.chatWithAI(State.userId, State.farmId, text, chatHistory);
+            document.getElementById(loadingId).remove();
+            
+            chatHistory.push({ role: "user", content: text });
+            chatHistory.push({ role: "assistant", content: data.reply });
+            
+            addMessage(data.reply, "bot");
+        } catch (e) {
+            document.getElementById(loadingId).remove();
+            addMessage("⚠️ Sorry, I could not fetch an answer right now.", "bot");
+        }
+    }
+
+    sendBtn.addEventListener("click", handleSend);
+    input.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") handleSend();
+    });
+});
