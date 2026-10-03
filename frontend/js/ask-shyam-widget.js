@@ -204,6 +204,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     <div class="shyam-chat-header-title">Ask Shyam</div>
                     <div class="shyam-chat-header-subtitle">Your AI Farming Expert</div>
                 </div>
+                <button class="shyam-chat-close" id="shyamStopAudioBtn" style="display:none; font-size:1.4rem; cursor:pointer;" title="Stop Voice">🔇</button>
                 <button class="shyam-chat-close" id="shyamCloseBtn">✕</button>
             </div>
             <div class="shyam-chat-body" id="shyamChatBody">
@@ -232,6 +233,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Logic
     const widgetBtn = document.getElementById("shyamWidgetBtn");
+    
+    const stopAudioBtn = document.getElementById("shyamStopAudioBtn");
+    let currentAudio = null;
+
+    stopAudioBtn.addEventListener("click", () => {
+        if (currentAudio) {
+            currentAudio.pause();
+            currentAudio.currentTime = 0;
+            currentAudio = null;
+            stopAudioBtn.style.display = "none";
+        }
+    });
+
     const popup = document.getElementById("shyamChatPopup");
     const closeBtn = document.getElementById("shyamCloseBtn");
     const input = document.getElementById("shyamInput");
@@ -408,8 +422,18 @@ document.addEventListener("DOMContentLoaded", () => {
             
             // Play audio if generated
             if (data.audio_base64) {
-                const audio = new Audio("data:audio/mp3;base64," + data.audio_base64);
-                audio.play().catch(e => console.log("Audio play blocked by browser", e));
+                if (currentAudio) {
+                    currentAudio.pause();
+                }
+                currentAudio = new Audio("data:audio/mp3;base64," + data.audio_base64);
+                currentAudio.play().then(() => {
+                    stopAudioBtn.style.display = "block";
+                }).catch(e => console.log("Audio play blocked by browser", e));
+                
+                currentAudio.onended = () => {
+                    stopAudioBtn.style.display = "none";
+                    currentAudio = null;
+                };
             }
 
             

@@ -315,16 +315,26 @@ async def chat_with_farmai(payload: AskShyamRequest, db: Session = Depends(get_d
         
         # 3. Generate Audio Output if requested
         if payload.generate_audio:
-            from gtts import gTTS
-            import io
+            import edge_tts
             import base64
+            import tempfile
+            import os
             try:
-                tts = gTTS(text=result["reply"], lang="hi") # Default to hindi for now
-                fp = io.BytesIO()
-                tts.write_to_fp(fp)
-                fp.seek(0)
-                audio_b64 = base64.b64encode(fp.read()).decode("utf-8")
+                # Use a masculine Hindi voice (MadhurNeural)
+                voice = "hi-IN-MadhurNeural"
+                communicate = edge_tts.Communicate(result["reply"], voice)
+                
+                with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as tf:
+                    temp_path = tf.name
+                
+                await communicate.save(temp_path)
+                
+                with open(temp_path, "rb") as f:
+                    audio_b64 = base64.b64encode(f.read()).decode("utf-8")
                 result["audio_base64"] = audio_b64
+                
+                if os.path.exists(temp_path):
+                    os.remove(temp_path)
             except Exception as e:
                 logger.error(f"TTS error: {e}")
                 
