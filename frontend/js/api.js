@@ -290,19 +290,29 @@ window.changeWebsiteLanguage = function(langCode) {
     }
     const shyamToggle = document.getElementById("shyamLangToggle");
     if (shyamToggle) shyamToggle.value = langCode;
-    const btnEn = document.querySelectorAll('.btn-en');
-    const btnHi = document.querySelectorAll('.btn-hi');
-    btnEn.forEach(b => b.classList.toggle('active', langCode === 'en'));
-    btnHi.forEach(b => b.classList.toggle('active', langCode === 'hi'));
+    const toggleBtn = document.getElementById('globalLangToggleBtn');
+    if (toggleBtn) {
+        toggleBtn.innerHTML = langCode === 'hi' ? '🌐 Translate to English' : '🌐 Translate to हिंदी';
+    }
 };
 
 document.addEventListener("DOMContentLoaded", () => {
     let currentLang = 'en';
     const match = document.cookie.match(/googtrans=\/en\/([a-z]{2})/);
     if (match) currentLang = match[1];
-    const btnEn = document.querySelectorAll('.btn-en');
-    const btnHi = document.querySelectorAll('.btn-hi');
-    btnEn.forEach(b => b.classList.toggle('active', currentLang === 'en'));
-    btnHi.forEach(b => b.classList.toggle('active', currentLang === 'hi'));
+    const toggleBtn = document.getElementById('globalLangToggleBtn');
+    if (toggleBtn) {
+        toggleBtn.innerHTML = currentLang === 'hi' ? '🌐 Translate to English' : '🌐 Translate to हिंदी';
+    }
 });
 // ──────────────────────────────────────
+
+
+window.toggleWebsiteLanguage = function() {
+    let currentLang = 'en';
+    const match = document.cookie.match(/googtrans=\/en\/([a-z]{2})/);
+    if (match) currentLang = match[1];
+    
+    const newLang = currentLang === 'en' ? 'hi' : 'en';
+    window.changeWebsiteLanguage(newLang);
+};

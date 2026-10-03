@@ -26,9 +26,10 @@
         </div>
       </div>
       
-        <div class="lang-segmented-control skiptranslate" style="margin: 10px 16px;">
-            <button class="lang-segment btn-en" onclick="changeWebsiteLanguage('en')">English</button>
-            <button class="lang-segment btn-hi" onclick="changeWebsiteLanguage('hi')">हिंदी</button>
+        <div class="skiptranslate" style="padding: 10px 16px; border-top: 1px solid var(--color-border); margin-top: 10px;">
+            <button id="globalLangToggleBtn" class="btn" style="width: 100%; background: var(--color-surface); color: var(--color-text); border: 1px solid var(--color-border); justify-content: center;" onclick="toggleWebsiteLanguage()">
+                🌐 Translate to हिंदी
+            </button>
         </div>
       <div class="sidebar-footer">
         <div class="farm-info">
@@ -91,6 +92,6 @@
   <div id="toast-container"></div>
   <script src="js/api.js"></script>
   <script src="js/irrigation.js"></script>
-  <script src="js/ask-shyam-widget.js?v=13"></script>
+  <script src="js/ask-shyam-widget.js?v=14"></script>
 </body>
 </html>
