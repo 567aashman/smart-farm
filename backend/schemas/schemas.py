@@ -406,14 +406,14 @@ class ActionPlanResponse(BaseModel):
 # FARM AI SCHEMAS
 # ─────────────────────────────────────────────
 
-class Ask ShyamRequest(BaseModel):
+class AskShyamRequest(BaseModel):
     user_id: int
     farm_id: int
     message: str = Field(..., min_length=1, max_length=2000)
     conversation_history: Optional[List[Dict[str, str]]] = []
 
 
-class Ask ShyamResponse(BaseModel):
+class AskShyamResponse(BaseModel):
     reply: str
     tools_used: List[str]
     sources: List[str]

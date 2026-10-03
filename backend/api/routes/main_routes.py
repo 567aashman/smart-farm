@@ -14,9 +14,9 @@ from backend.services.market_service import market_service
 from backend.agriculture.irrigation_engine import irrigation_engine
 from backend.agriculture.risk_engine import risk_engine
 from backend.agriculture.action_plan import action_plan_engine
-from backend.agents.ask_shyam import ask_shyam_agent, Ask ShyamError
+from backend.agents.ask_shyam import ask_shyam_agent, AskShyamError
 from backend.notifications.telegram_service import telegram_service
-from backend.schemas.schemas import Ask ShyamRequest
+from backend.schemas.schemas import AskShyamRequest
 
 logger = logging.getLogger(__name__)
 
@@ -270,7 +270,7 @@ async def get_action_plan(farm_id: int, db: Session = Depends(get_db)):
 # ─────────────────────────────────────────────
 
 @ai_router.post("/chat")
-async def chat_with_farmai(payload: Ask ShyamRequest, db: Session = Depends(get_db)):
+async def chat_with_farmai(payload: AskShyamRequest, db: Session = Depends(get_db)):
     try:
         result = await ask_shyam_agent.chat(
             user_message=payload.message,
@@ -282,7 +282,7 @@ async def chat_with_farmai(payload: Ask ShyamRequest, db: Session = Depends(get_
             market_service=market_service,
         )
         return result
-    except Ask ShyamError as e:
+    except AskShyamError as e:
         raise HTTPException(status_code=503, detail=f"Ask Shyam is temporarily unavailable: {str(e)}")
     except Exception as e:
         logger.error(f"Ask Shyam error: {e}", exc_info=True)

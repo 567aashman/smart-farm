@@ -53,7 +53,7 @@ Always fetch the relevant data before answering.
 """
 
 
-class Ask ShyamAgent:
+class AskShyamAgent:
     """
     Groq-based AI agent with tool calling for agricultural advice.
     """
@@ -63,7 +63,7 @@ class Ask ShyamAgent:
 
     def _get_client(self):
         if not settings.groq_api_key:
-            raise Ask ShyamError("GROQ_API_KEY is not configured.")
+            raise AskShyamError("GROQ_API_KEY is not configured.")
         if self._client is None:
             from groq import Groq
             self._client = Groq(api_key=settings.groq_api_key)
@@ -182,10 +182,10 @@ class Ask ShyamAgent:
         }
 
 
-class Ask ShyamError(Exception):
+class AskShyamError(Exception):
     """Raised when Ask Shyam cannot process the request."""
     pass
 
 
 # Module-level singleton
-ask_shyam_agent = Ask ShyamAgent()
+ask_shyam_agent = AskShyamAgent()
