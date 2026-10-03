@@ -253,16 +253,13 @@ function requireAuth(redirectTo = 'onboarding.html') {
 }
 
 
-
 // ─── GLOBAL WEBSITE TRANSLATOR ───
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Inject Hidden Google Translate Element
     const gtDiv = document.createElement('div');
     gtDiv.id = 'google_translate_element';
     gtDiv.style.display = 'none';
     document.body.appendChild(gtDiv);
 
-    // 2. Load Google Translate Script
     window.googleTranslateElementInit = function() {
         new google.translate.TranslateElement({
             pageLanguage: 'en', 
@@ -274,35 +271,20 @@ document.addEventListener('DOMContentLoaded', () => {
     gtScript.src = "https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
     document.body.appendChild(gtScript);
 
-    // 3. CSS to hide Google's default popups and banners
     const style = document.createElement('style');
-    style.innerHTML = 
-        .goog-te-banner-frame.skiptranslate { display: none !important; } 
-        body { top: 0px !important; }
-        #goog-gt-tt { display: none !important; top: 0px !important; } 
-        .goog-tooltip, .goog-tooltip:hover { display: none !important; } 
-    ;
+    style.innerHTML = ".goog-te-banner-frame.skiptranslate { display: none !important; } body { top: 0px !important; } #goog-gt-tt { display: none !important; top: 0px !important; } .goog-tooltip, .goog-tooltip:hover { display: none !important; }";
     document.head.appendChild(style);
 
-    // 4. Inject Custom Toggle in Sidebar
     const sidebars = document.querySelectorAll('.nav-section');
-    const lastSidebar = sidebars[sidebars.length - 1]; // Usually "Account" section
+    const lastSidebar = sidebars[sidebars.length - 1]; 
     
     if (lastSidebar) {
-        // Check current lang from Google's cookie
         let currentLang = 'en';
         const match = document.cookie.match(/googtrans=\/en\/([a-z]{2})/);
         if (match) currentLang = match[1];
 
-        const toggleHtml = 
-          <div style="padding: 10px 16px; display:flex; align-items:center; gap:10px; border-top:1px solid var(--color-border); margin-top:10px;" class="skiptranslate">
-            <span style="font-size:1.2rem;">🌐</span>
-            <select id="globalLangToggle" style="flex-grow:1; background:var(--color-surface); color:var(--color-text); border:1px solid var(--color-border); border-radius:6px; padding:4px; font-weight:bold; cursor:pointer;" onchange="changeWebsiteLanguage(this.value)">
-                <option value="en" >English</option>
-                <option value="hi" >हिंदी</option>
-            </select>
-          </div>
-        ;
+        const toggleHtml = '<div style="padding: 10px 16px; display:flex; align-items:center; gap:10px; border-top:1px solid var(--color-border); margin-top:10px;" class="skiptranslate"><span style="font-size:1.2rem;">🌐</span><select id="globalLangToggle" style="flex-grow:1; background:var(--color-surface); color:var(--color-text); border:1px solid var(--color-border); border-radius:6px; padding:4px; font-weight:bold; cursor:pointer;" onchange="changeWebsiteLanguage(this.value)"><option value="en" ' + (currentLang === 'en' ? 'selected' : '') + '>English</option><option value="hi" ' + (currentLang === 'hi' ? 'selected' : '') + '>हिंदी</option></select></div>';
+        
         lastSidebar.insertAdjacentHTML('beforeend', toggleHtml);
     }
 });
@@ -313,11 +295,9 @@ window.changeWebsiteLanguage = function(langCode) {
         selectField.value = langCode;
         selectField.dispatchEvent(new Event('change'));
     } else {
-        // Fallback if widget hasn't loaded yet
         setTimeout(() => window.changeWebsiteLanguage(langCode), 500);
     }
     
-    // Also sync Ask Shyam Chatbot toggle if it exists
     const shyamToggle = document.getElementById("shyamLangToggle");
     if (shyamToggle) {
         shyamToggle.value = langCode;
