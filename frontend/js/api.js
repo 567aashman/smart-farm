@@ -277,6 +277,16 @@ function requireAuth(redirectTo = 'onboarding.html') {
 })();
 
 window.changeWebsiteLanguage = function(langCode) {
+    if (langCode === 'en') {
+        // Google Translate doesn't revert cleanly via JS, so we clear cookie and reload
+        document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+        document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; domain=' + window.location.hostname + '; path=/;';
+        const shyamToggle = document.getElementById("shyamLangToggle");
+        if (shyamToggle) shyamToggle.value = 'en';
+        window.location.reload();
+        return;
+    }
+
     const selectField = document.querySelector("#google_translate_element select");
     if(selectField) {
         selectField.value = langCode;
@@ -288,11 +298,13 @@ window.changeWebsiteLanguage = function(langCode) {
             setTimeout(() => window.changeWebsiteLanguage(langCode), 500);
         }
     }
+    
     const shyamToggle = document.getElementById("shyamLangToggle");
     if (shyamToggle) shyamToggle.value = langCode;
+    
     const toggleBtn = document.getElementById('globalLangToggleBtn');
     if (toggleBtn) {
-        toggleBtn.innerHTML = langCode === 'hi' ? '🌐 Translate to English' : '🌐 Translate to हिंदी';
+        toggleBtn.innerHTML = langCode === 'hi' ? '🌐 View in English' : '🌐 हिंदी (Translate to Hindi)';
     }
 };
 
@@ -302,17 +314,21 @@ document.addEventListener("DOMContentLoaded", () => {
     if (match) currentLang = match[1];
     const toggleBtn = document.getElementById('globalLangToggleBtn');
     if (toggleBtn) {
-        toggleBtn.innerHTML = currentLang === 'hi' ? '🌐 Translate to English' : '🌐 Translate to हिंदी';
+        toggleBtn.innerHTML = currentLang === 'hi' ? '🌐 View in English' : '🌐 हिंदी (Translate to Hindi)';
     }
 });
 // ──────────────────────────────────────
 
 
 window.toggleWebsiteLanguage = function() {
+    const selectField = document.querySelector("#google_translate_element select");
     let currentLang = 'en';
-    const match = document.cookie.match(/googtrans=\/en\/([a-z]{2})/);
-    if (match) currentLang = match[1];
-    
+    if (selectField && selectField.value) {
+        currentLang = selectField.value;
+    } else {
+        const match = document.cookie.match(/googtrans=\/en\/([a-z]{2})/);
+        if (match) currentLang = match[1];
+    }
     const newLang = currentLang === 'en' ? 'hi' : 'en';
     window.changeWebsiteLanguage(newLang);
 };
