@@ -304,7 +304,7 @@ document.addEventListener("DOMContentLoaded", () => {
         
         let msgHtml = text;
         if (currentImageBase64) {
-            msgHtml = <img src="" style="max-width:100%; border-radius:8px; margin-bottom:8px; display:block;"><br> + msgHtml;
+            msgHtml = `<img src="${currentImageBase64}" style="max-width:100%; border-radius:8px; margin-bottom:8px; display:block;"><br>` + msgHtml;
         }
         addMessage(msgHtml, "user");
 
