@@ -36,6 +36,23 @@ def send(chat_id, text, parse_mode="HTML"):
         logger.error(f"Send failed: {e}")
 
 
+def send_audio(chat_id, audio_file_path):
+    try:
+        with open(audio_file_path, "rb") as f:
+            files = {"voice": f}
+            data = {"chat_id": chat_id}
+            r = httpx.post(
+                f"{BASE_URL}/sendVoice",
+                data=data,
+                files=files,
+                timeout=30
+            )
+            logger.info(f"Send audio result: {r.status_code} {r.text}")
+            return r.json()
+    except Exception as e:
+        logger.error(f"Send audio failed: {e}")
+
+
 def get_updates(offset=None):
     params = {"timeout": 30}
     if offset:
@@ -128,7 +145,7 @@ def handle_help(chat_id):
     send(chat_id, text)
 
 
-def handle_chat(db, chat_id, text):
+def handle_chat(db, chat_id, text, is_voice=False, lang="hi"):
     user = db.query(User).filter(User.telegram_chat_id == str(chat_id)).first()
     if not user:
         send(chat_id, "⚠️ Your account is not linked yet. Use <code>/start CODE</code>.")
@@ -148,7 +165,27 @@ def handle_chat(db, chat_id, text):
             db=db,
             weather_service=weather_service
         ))
-        send(chat_id, f"🤖 <b>KisanSathi:</b>\n\n{result['reply']}")
+        
+        reply_text = result['reply']
+        send(chat_id, f"🤖 <b>KisanSathi:</b>\n\n{reply_text}")
+        
+        if is_voice:
+            from gtts import gTTS
+            import tempfile
+            import os
+            try:
+                clean_text = reply_text.replace('*', '').replace('#', '').replace('_', '')
+                tts = gTTS(text=clean_text, lang=lang)
+                with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as tmp:
+                    tmp_path = tmp.name
+                tts.save(tmp_path)
+                send_audio(chat_id, tmp_path)
+            except Exception as e:
+                logger.error(f"TTS error: {e}")
+            finally:
+                if 'tmp_path' in locals() and os.path.exists(tmp_path):
+                    os.remove(tmp_path)
+                    
     except Exception as e:
         logger.error(f"FarmAI chat error: {e}")
         send(chat_id, "⚠️ Sorry, FarmAI is temporarily unavailable.")
@@ -191,10 +228,12 @@ def handle_voice(db, chat_id, file_id):
                 transcription = groq_client.audio.transcriptions.create(
                   file=(os.path.basename(tmp_path), audio_file.read()),
                   model="whisper-large-v3",
-                  response_format="json"
+                  response_format="verbose_json"
                 )
             
             text = transcription.text
+            lang = getattr(transcription, "language", "hi")
+            
             if not text or not text.strip():
                 send(chat_id, "🤷 Aawaz saaf nahi aayi. Kripya dobara bolen.")
                 return
@@ -202,7 +241,7 @@ def handle_voice(db, chat_id, file_id):
             send(chat_id, f"📝 <b>Aapne kaha:</b> <i>{text}</i>")
             
             # Feed to FarmAI
-            handle_chat(db, chat_id, text)
+            handle_chat(db, chat_id, text, is_voice=True, lang=lang)
             
         finally:
             os.remove(tmp_path)
