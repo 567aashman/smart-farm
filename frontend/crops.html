@@ -71,12 +71,21 @@
         <div id="panel-harvested" class="hidden">
           <div class="flex" style="justify-content:space-between; align-items:center; margin-bottom:1rem;">
               <h3>Harvested Crops</h3>
-              <select id="harvest-period-filter" class="form-control" style="width:auto; padding:4px 8px;" onchange="renderHarvestedCrops()">
+              <div class="flex gap-2" style="align-items: center;">
+              <select id="harvest-period-filter" class="form-control" style="width:auto; padding:4px 8px;" onchange="toggleCustomDateHarvested()">
                   <option value="all">All Time</option>
                   <option value="3">Last 3 Months</option>
                   <option value="6">Last 6 Months</option>
                   <option value="12">Last 1 Year</option>
+                  <option value="custom">Custom Date</option>
               </select>
+              <div id="harvest-custom-date-picker" class="hidden flex gap-2" style="align-items: center;">
+                  <input type="date" id="harvest-start-date" class="form-control" style="padding:4px 8px; width:auto;">
+                  <span style="font-size:0.9rem; color:var(--color-text-muted);">to</span>
+                  <input type="date" id="harvest-end-date" class="form-control" style="padding:4px 8px; width:auto;">
+                  <button class="btn btn-primary btn-sm" onclick="renderHarvestedCrops()">Apply</button>
+              </div>
+          </div>
           </div>
           <div id="harvested-grid"></div>
         </div>
@@ -155,7 +164,7 @@
 
   <div id="toast-container"></div>
   <script src="js/api.js"></script>
-  <script src="js/crops.js?v=5"></script>
+  <script src="js/crops.js?v=6"></script>
   <script src="js/ask-shyam-widget.js?v=3"></script>
 </body>
 </html>

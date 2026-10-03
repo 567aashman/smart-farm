@@ -98,7 +98,22 @@ function renderHarvestedCrops() {
   const period = document.getElementById('harvest-period-filter') ? document.getElementById('harvest-period-filter').value : 'all';
   let harvestedCrops = window.allCropsData.filter(c => c.status === 'harvested');
   
-  if (period !== 'all') {
+  if (period === 'custom') {
+    const startDateStr = document.getElementById('harvest-start-date').value;
+    const endDateStr = document.getElementById('harvest-end-date').value;
+    if (startDateStr && endDateStr) {
+      const startDate = new Date(startDateStr);
+      const endDate = new Date(endDateStr);
+      endDate.setHours(23, 59, 59, 999);
+      
+      harvestedCrops = harvestedCrops.filter(c => {
+         const dateToCheck = c.expected_harvest_date || c.sowing_date;
+         if (!dateToCheck) return true;
+         const d = new Date(dateToCheck);
+         return d >= startDate && d <= endDate;
+      });
+    }
+  } else if (period !== 'all') {
     const months = parseInt(period);
     const cutoffDate = new Date();
     cutoffDate.setMonth(cutoffDate.getMonth() - months);
@@ -329,3 +344,15 @@ async function markHarvested(cropId) {
 }
 
 function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+
+function toggleCustomDateHarvested() {
+    const period = document.getElementById('harvest-period-filter').value;
+    const customPicker = document.getElementById('harvest-custom-date-picker');
+    if (period === 'custom') {
+        customPicker.classList.remove('hidden');
+    } else {
+        customPicker.classList.add('hidden');
+        renderHarvestedCrops();
+    }
+}
