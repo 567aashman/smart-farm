@@ -253,8 +253,8 @@ function requireAuth(redirectTo = 'onboarding.html') {
 }
 
 
-// ─── GLOBAL WEBSITE TRANSLATOR ───
-document.addEventListener('DOMContentLoaded', () => {
+// ─── GLOBAL WEBSITE TRANSLATOR CORE ───
+(function initGoogleTranslate() {
     const gtDiv = document.createElement('div');
     gtDiv.id = 'google_translate_element';
     gtDiv.style.display = 'none';
@@ -274,20 +274,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const style = document.createElement('style');
     style.innerHTML = ".goog-te-banner-frame.skiptranslate { display: none !important; } body { top: 0px !important; } #goog-gt-tt { display: none !important; top: 0px !important; } .goog-tooltip, .goog-tooltip:hover { display: none !important; }";
     document.head.appendChild(style);
-
-    const sidebars = document.querySelectorAll('.nav-section');
-    const lastSidebar = sidebars[sidebars.length - 1]; 
-    
-    if (lastSidebar) {
-        let currentLang = 'en';
-        const match = document.cookie.match(/googtrans=\/en\/([a-z]{2})/);
-        if (match) currentLang = match[1];
-
-        const toggleHtml = '<div style="padding: 10px 16px; display:flex; align-items:center; gap:10px; border-top:1px solid var(--color-border); margin-top:10px;" class="skiptranslate"><span style="font-size:1.2rem;">🌐</span><select id="globalLangToggle" style="flex-grow:1; background:var(--color-surface); color:var(--color-text); border:1px solid var(--color-border); border-radius:6px; padding:4px; font-weight:bold; cursor:pointer;" onchange="changeWebsiteLanguage(this.value)"><option value="en" ' + (currentLang === 'en' ? 'selected' : '') + '>English</option><option value="hi" ' + (currentLang === 'hi' ? 'selected' : '') + '>हिंदी</option></select></div>';
-        
-        lastSidebar.insertAdjacentHTML('beforeend', toggleHtml);
-    }
-});
+})();
 
 window.changeWebsiteLanguage = function(langCode) {
     const selectField = document.querySelector("#google_translate_element select");
@@ -297,10 +284,15 @@ window.changeWebsiteLanguage = function(langCode) {
     } else {
         setTimeout(() => window.changeWebsiteLanguage(langCode), 500);
     }
-    
     const shyamToggle = document.getElementById("shyamLangToggle");
-    if (shyamToggle) {
-        shyamToggle.value = langCode;
-    }
+    if (shyamToggle) shyamToggle.value = langCode;
 };
-// ─────────────────────────────────
+
+document.addEventListener("DOMContentLoaded", () => {
+    let currentLang = 'en';
+    const match = document.cookie.match(/googtrans=\/en\/([a-z]{2})/);
+    if (match) currentLang = match[1];
+    const toggles = document.querySelectorAll('.globalLangToggle');
+    toggles.forEach(t => t.value = currentLang);
+});
+// ──────────────────────────────────────
