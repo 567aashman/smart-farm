@@ -267,6 +267,33 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     let chatHistory = [];
+    let visualHistory = [];
+    
+    // Load from local storage
+    try {
+        const storedApi = localStorage.getItem("shyamChatHistoryApi");
+        const storedVisual = localStorage.getItem("shyamChatHistoryVisual");
+        if (storedApi && storedVisual) {
+            chatHistory = JSON.parse(storedApi);
+            visualHistory = JSON.parse(storedVisual);
+            
+            if (visualHistory.length > 0) {
+                chatBody.innerHTML = "";
+                visualHistory.forEach(item => {
+                    const msgDiv = document.createElement("div");
+                    msgDiv.className = 'shyam-msg ' + item.sender;
+                    msgDiv.innerHTML = item.html;
+                    chatBody.appendChild(msgDiv);
+                });
+                chatBody.scrollTop = chatBody.scrollHeight;
+            }
+        }
+    } catch(e) {}
+    
+    function saveHistory() {
+        localStorage.setItem("shyamChatHistoryApi", JSON.stringify(chatHistory));
+        localStorage.setItem("shyamChatHistoryVisual", JSON.stringify(visualHistory));
+    }
 
     function toggleChat() {
         popup.classList.toggle("open");
@@ -278,7 +305,7 @@ document.addEventListener("DOMContentLoaded", () => {
     widgetBtn.addEventListener("click", toggleChat);
     closeBtn.addEventListener("click", toggleChat);
 
-    function addMessage(text, sender) {
+    function addMessage(text, sender, skipSave = false) {
         const msgDiv = document.createElement("div");
         msgDiv.className = 'shyam-msg ' + sender;
         
@@ -290,6 +317,11 @@ document.addEventListener("DOMContentLoaded", () => {
         msgDiv.innerHTML = formattedText;
         chatBody.appendChild(msgDiv);
         chatBody.scrollTop = chatBody.scrollHeight;
+        
+        if (!skipSave) {
+            visualHistory.push({ sender: sender, html: formattedText });
+            saveHistory();
+        }
     }
 
     async function handleSend() {
@@ -297,7 +329,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!text) return;
         
         if (!State.isLoggedIn()) {
-            addMessage("Please log in to use Ask Shyam.", "bot");
+            addMessage("Please log in to use Ask Shyam.", "bot", true);
             return;
         }
 
@@ -333,11 +365,12 @@ document.addEventListener("DOMContentLoaded", () => {
             
             chatHistory.push({ role: "user", content: text });
             chatHistory.push({ role: "assistant", content: data.reply });
+            saveHistory();
             
             addMessage(data.reply, "bot");
         } catch (e) {
             document.getElementById(loadingId).remove();
-            addMessage("⚠️ Sorry, I could not fetch an answer right now.", "bot");
+            addMessage("⚠️ Sorry, I could not fetch an answer right now.", "bot", true);
         }
     }
 
