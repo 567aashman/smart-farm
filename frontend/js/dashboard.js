@@ -483,7 +483,7 @@ async function quickAsk() {
   const answerDiv = document.getElementById('quick-ai-answer');
   const textDiv = document.getElementById('quick-ai-text');
   answerDiv.classList.remove('hidden');
-  textDiv.innerHTML = '<span class="loading-spinner"></span> FarmAI is thinking...';
+  textDiv.innerHTML = '<span class="loading-spinner"></span> Ask Shyam is thinking...';
 
   try {
     const result = await API.chatWithAI(userId, farmId, msg, quickAIHistory);
@@ -496,7 +496,7 @@ async function quickAsk() {
 
     input.value = '';
   } catch (e) {
-    textDiv.innerHTML = `⚠️ FarmAI unavailable: ${e.message}. Check GROQ_API_KEY.`;
+    textDiv.innerHTML = `⚠️ Ask Shyam unavailable: ${e.message}. Check GROQ_API_KEY.`;
   } finally {
     btn.disabled = false;
     btn.textContent = 'Ask 🤖';
@@ -563,7 +563,7 @@ async function showTelegramModal() {
       <div class="mt-4" style="font-size:0.875rem;color:var(--color-text-dim)">
         <pre style="background:var(--color-surface-2);padding:12px;border-radius:8px;border:1px solid var(--color-border);white-space:pre-wrap">${data.instructions}</pre>
       </div>
-      <div class="mt-3 text-xs text-muted">Code expires in ${data.expires_in_minutes} minutes. After linking, you'll receive reminders and can ask FarmAI from Telegram!</div>
+      <div class="mt-3 text-xs text-muted">Code expires in ${data.expires_in_minutes} minutes. After linking, you'll receive reminders and can ask Ask Shyam from Telegram!</div>
     `;
   } catch (e) {
     document.getElementById('telegram-modal-body').innerHTML = `

@@ -1,5 +1,5 @@
 /**
- * SmartFarm - FarmAI Chat JS
+ * SmartFarm - Ask Shyam Chat JS
  */
 
 if (!requireAuth()) { /* redirected */ }
@@ -43,7 +43,7 @@ async function sendMessage() {
   } catch (e) {
     removeTyping();
     appendBotMessage(
-      `⚠️ FarmAI is temporarily unavailable.\n\n${e.message}\n\nPlease check that:\n• GROQ_API_KEY is set in .env\n• The backend is running`,
+      `⚠️ Ask Shyam is temporarily unavailable.\n\n${e.message}\n\nPlease check that:\n• GROQ_API_KEY is set in .env\n• The backend is running`,
       []
     );
   } finally {

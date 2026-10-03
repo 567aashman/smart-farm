@@ -14,9 +14,9 @@ from backend.services.market_service import market_service
 from backend.agriculture.irrigation_engine import irrigation_engine
 from backend.agriculture.risk_engine import risk_engine
 from backend.agriculture.action_plan import action_plan_engine
-from backend.agents.farm_ai import farm_ai_agent, FarmAIError
+from backend.agents.ask_shyam import ask_shyam_agent, Ask ShyamError
 from backend.notifications.telegram_service import telegram_service
-from backend.schemas.schemas import FarmAIRequest
+from backend.schemas.schemas import Ask ShyamRequest
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +24,7 @@ weather_router = APIRouter(prefix="/weather", tags=["Weather"])
 irrigation_router = APIRouter(prefix="/irrigation", tags=["Irrigation"])
 risk_router = APIRouter(prefix="/risks", tags=["Risks"])
 plan_router = APIRouter(prefix="/plan", tags=["Action Plan"])
-ai_router = APIRouter(prefix="/ai", tags=["FarmAI"])
+ai_router = APIRouter(prefix="/ai", tags=["Ask Shyam"])
 market_router = APIRouter(prefix="/market", tags=["Market"])
 telegram_router = APIRouter(prefix="/telegram", tags=["Telegram"])
 tasks_router = APIRouter(prefix="/tasks", tags=["Tasks"])
@@ -270,9 +270,9 @@ async def get_action_plan(farm_id: int, db: Session = Depends(get_db)):
 # ─────────────────────────────────────────────
 
 @ai_router.post("/chat")
-async def chat_with_farmai(payload: FarmAIRequest, db: Session = Depends(get_db)):
+async def chat_with_farmai(payload: Ask ShyamRequest, db: Session = Depends(get_db)):
     try:
-        result = await farm_ai_agent.chat(
+        result = await ask_shyam_agent.chat(
             user_message=payload.message,
             farm_id=payload.farm_id,
             user_id=payload.user_id,
@@ -282,11 +282,11 @@ async def chat_with_farmai(payload: FarmAIRequest, db: Session = Depends(get_db)
             market_service=market_service,
         )
         return result
-    except FarmAIError as e:
-        raise HTTPException(status_code=503, detail=f"FarmAI is temporarily unavailable: {str(e)}")
+    except Ask ShyamError as e:
+        raise HTTPException(status_code=503, detail=f"Ask Shyam is temporarily unavailable: {str(e)}")
     except Exception as e:
-        logger.error(f"FarmAI error: {e}", exc_info=True)
-        raise HTTPException(status_code=503, detail="FarmAI is temporarily unavailable. Please try again.")
+        logger.error(f"Ask Shyam error: {e}", exc_info=True)
+        raise HTTPException(status_code=503, detail="Ask Shyam is temporarily unavailable. Please try again.")
 
 
 # ─────────────────────────────────────────────
@@ -343,7 +343,7 @@ async def telegram_webhook(update: dict, db: Session = Depends(get_db)):
     try:
         await telegram_service.handle_webhook(
             db=db, update=update,
-            farm_ai_agent=farm_ai_agent,
+            ask_shyam_agent=ask_shyam_agent,
             weather_service=weather_service,
         )
         return {"ok": True}

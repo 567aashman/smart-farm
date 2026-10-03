@@ -164,7 +164,7 @@ and a normal browser for the frontend.
                 │             │             │              │
                 │         PostgreSQL    Weather API     Groq API
                 │             │             │              │
-                │             │             │         FarmAI Agent
+                │             │             │         Ask Shyam Agent
                 │             │             │              │
                 │             │             │        Tool Calling
                 │             │             │              │
@@ -196,7 +196,7 @@ smartfarm-ai/
 │   ├── dashboard.html
 │   ├── crops.html
 │   ├── irrigation.html
-│   ├── farm-ai.html
+│   ├── ask-shyam.html
 │   ├── styles/
 │   │   └── style.css
 │   ├── js/
@@ -205,7 +205,7 @@ smartfarm-ai/
 │   │   ├── onboarding.js
 │   │   ├── crops.js
 │   │   ├── irrigation.js
-│   │   └── farm-ai.js
+│   │   └── ask-shyam.js
 │   └── assets/
 │
 ├── backend/
@@ -540,7 +540,7 @@ The LLM must NOT calculate irrigation values.
 
 The agricultural engine does the calculation.
 
-FarmAI only explains the result.
+Ask Shyam only explains the result.
 
 ---
 
@@ -735,7 +735,7 @@ Crop Recommendations
 
 Farm Analytics
 
-Ask FarmAI
+Ask Ask Shyam
 ```
 
 Make it responsive and mobile-friendly.
@@ -744,7 +744,7 @@ Do not use a frontend framework.
 
 ---
 
-# PHASE 10 — Groq FarmAI
+# PHASE 10 — Groq Ask Shyam
 
 Use Groq API.
 
@@ -788,7 +788,7 @@ Example:
 User:
 Should I irrigate my wheat tomorrow?
 
-FarmAI
+Ask Shyam
  ↓
 get_active_crops()
  ↓
@@ -813,34 +813,34 @@ The AI must never invent:
 
 ---
 
-# PHASE 11 — FarmAI Chat UI
+# PHASE 11 — Ask Shyam Chat UI
 
 Create:
 
 ```text
-farm-ai.html
-farm-ai.js
+ask-shyam.html
+ask-shyam.js
 ```
 
 Simple chat interface:
 
 ```text
 ────────────────────────────
-🤖 FarmAI
+🤖 Ask Shyam
 ────────────────────────────
 
 User:
 Should I water my wheat tomorrow?
 
-FarmAI:
+Ask Shyam:
 Let me check your crop and weather...
 
-FarmAI:
+Ask Shyam:
 No irrigation is recommended tomorrow
 because rainfall is expected.
 
 ────────────────────────────
-Ask FarmAI...
+Ask Ask Shyam...
 [________________________]
 ```
 
@@ -986,16 +986,16 @@ Prevent duplicate notifications.
 
 ---
 
-# PHASE 15 — Telegram FarmAI
+# PHASE 15 — Telegram Ask Shyam
 
-Allow users to ask FarmAI directly through Telegram.
+Allow users to ask Ask Shyam directly through Telegram.
 
 ```text
 Telegram
    ↓
 FastAPI
    ↓
-FarmAI
+Ask Shyam
    ↓
 Tool Calling
    ↓
@@ -1143,7 +1143,7 @@ Weather temporarily unavailable.
 If Groq fails:
 
 ```text
-FarmAI is temporarily unavailable.
+Ask Shyam is temporarily unavailable.
 ```
 
 The rest of the application should continue working.
@@ -1235,7 +1235,7 @@ Generate Farm Tasks
      ↓
 Generate 7-Day Plan
      ↓
-Ask FarmAI
+Ask Ask Shyam
      ↓
 Verify Tool Calling
      ↓
@@ -1245,7 +1245,7 @@ Trigger Reminder
      ↓
 Receive Telegram Message
      ↓
-Ask FarmAI Through Telegram
+Ask Ask Shyam Through Telegram
      ↓
 Receive Answer
 ```
@@ -1313,7 +1313,7 @@ The completed application must contain:
 - [ ] 7-day action plan
 - [ ] Farm dashboard
 - [ ] Farm analytics
-- [ ] Groq FarmAI
+- [ ] Groq Ask Shyam
 - [ ] Tool calling
 - [ ] Agricultural RAG
 - [ ] Telegram account linking
@@ -1321,7 +1321,7 @@ The completed application must contain:
 - [ ] Telegram weather alerts
 - [ ] Telegram crop reminders
 - [ ] Telegram risk alerts
-- [ ] Telegram FarmAI
+- [ ] Telegram Ask Shyam
 - [ ] Mandi/market information
 - [ ] Notification preferences
 - [ ] Error handling
@@ -1447,13 +1447,13 @@ Connect Telegram
      ↓
 Receive Telegram Reminder
      ↓
-Ask FarmAI
+Ask Ask Shyam
      ↓
-FarmAI Uses Tools
+Ask Shyam Uses Tools
      ↓
 Receive Data-Based Answer
      ↓
-Ask FarmAI From Telegram
+Ask Ask Shyam From Telegram
      ↓
 Receive Answer
 ```

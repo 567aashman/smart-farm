@@ -223,7 +223,7 @@ class IrrigationEngine:
             "confidence": confidence,
             "skip_reason": skip_reason,
             "weather_factor": weather_factor,
-            # Extra context for FarmAI tool
+            # Extra context for Ask Shyam tool
             "_debug": {
                 "eto_mm_day": eto,
                 "etc_mm_day": etc,

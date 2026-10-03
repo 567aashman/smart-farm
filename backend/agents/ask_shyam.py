@@ -1,5 +1,5 @@
 """
-SmartFarm - FarmAI Agent (Phase 10)
+SmartFarm - Ask Shyam Agent (Phase 10)
 Groq-powered AI assistant with tool calling.
 
 Architecture:
@@ -24,7 +24,7 @@ from backend.tools.farm_tools import FarmToolExecutor, TOOL_DEFINITIONS
 
 logger = logging.getLogger(__name__)
 
-SYSTEM_PROMPT = """You are FarmAI, a knowledgeable agricultural assistant for SmartFarm.
+SYSTEM_PROMPT = """You are Ask Shyam, a knowledgeable agricultural assistant for SmartFarm.
 
 You help farmers make practical day-to-day farming decisions based on their real farm data, weather conditions, and crop stages.
 
@@ -53,7 +53,7 @@ Always fetch the relevant data before answering.
 """
 
 
-class FarmAIAgent:
+class Ask ShyamAgent:
     """
     Groq-based AI agent with tool calling for agricultural advice.
     """
@@ -63,7 +63,7 @@ class FarmAIAgent:
 
     def _get_client(self):
         if not settings.groq_api_key:
-            raise FarmAIError("GROQ_API_KEY is not configured.")
+            raise Ask ShyamError("GROQ_API_KEY is not configured.")
         if self._client is None:
             from groq import Groq
             self._client = Groq(api_key=settings.groq_api_key)
@@ -105,7 +105,7 @@ class FarmAIAgent:
 
         # ── Agentic Tool-Calling Loop ──
         for round_num in range(max_tool_rounds):
-            logger.info(f"FarmAI round {round_num + 1}, messages={len(messages)}")
+            logger.info(f"Ask Shyam round {round_num + 1}, messages={len(messages)}")
 
             response = client.chat.completions.create(
                 model="openai/gpt-oss-120b",
@@ -122,7 +122,7 @@ class FarmAIAgent:
             # If no more tool calls, we have the final answer
             if not message.tool_calls:
                 final_reply = message.content or "I couldn't generate a response. Please try again."
-                logger.info(f"FarmAI final answer after {round_num + 1} rounds, tools used: {tools_used}")
+                logger.info(f"Ask Shyam final answer after {round_num + 1} rounds, tools used: {tools_used}")
                 return {
                     "reply": final_reply,
                     "tools_used": tools_used,
@@ -168,7 +168,7 @@ class FarmAIAgent:
                 })
 
         # If we hit the max rounds, get a final answer anyway
-        logger.warning("FarmAI reached max tool rounds — forcing final response")
+        logger.warning("Ask Shyam reached max tool rounds — forcing final response")
         final_resp = client.chat.completions.create(
             model="openai/gpt-oss-120b",
             messages=messages + [{"role": "user", "content": "Please provide your final answer based on the data gathered."}],
@@ -182,10 +182,10 @@ class FarmAIAgent:
         }
 
 
-class FarmAIError(Exception):
-    """Raised when FarmAI cannot process the request."""
+class Ask ShyamError(Exception):
+    """Raised when Ask Shyam cannot process the request."""
     pass
 
 
 # Module-level singleton
-farm_ai_agent = FarmAIAgent()
+ask_shyam_agent = Ask ShyamAgent()

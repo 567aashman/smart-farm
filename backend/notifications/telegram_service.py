@@ -1,6 +1,6 @@
 """
 SmartFarm - Telegram Service (Phases 13, 14, 15)
-Telegram bot integration for reminders and FarmAI assistant.
+Telegram bot integration for reminders and Ask Shyam assistant.
 """
 import logging
 import secrets
@@ -95,10 +95,10 @@ class TelegramService:
             pass
         return "annadata_bot"
 
-    async def handle_webhook(self, db: Session, update: dict, farm_ai_agent=None, weather_service=None) -> bool:
+    async def handle_webhook(self, db: Session, update: dict, ask_shyam_agent=None, weather_service=None) -> bool:
         """
         Handle incoming Telegram webhook update.
-        Supports: /start, /link <code>, FarmAI questions.
+        Supports: /start, /link <code>, Ask Shyam questions.
         """
         message = update.get("message", {})
         chat_id = str(message.get("chat", {}).get("id", ""))
@@ -145,8 +145,8 @@ class TelegramService:
                 )
             return True
 
-        # ── FarmAI assistant ──
-        if farm_ai_agent:
+        # ── Ask Shyam assistant ──
+        if ask_shyam_agent:
             user = db.query(User).filter(User.telegram_chat_id == chat_id).first()
             if user:
                 await self.send_message(chat_id, "🌱 Let me check your farm data...")
@@ -157,7 +157,7 @@ class TelegramService:
                         await self.send_message(chat_id, "❌ No farm found. Please set up your farm on the dashboard first.")
                         return True
 
-                    result = await farm_ai_agent.chat(
+                    result = await ask_shyam_agent.chat(
                         user_message=text,
                         farm_id=farm.id,
                         user_id=user.id,
@@ -168,10 +168,10 @@ class TelegramService:
                     # Telegram max message length
                     if len(reply) > 4000:
                         reply = reply[:4000] + "..."
-                    await self.send_message(chat_id, f"🤖 <b>FarmAI:</b>\n\n{reply}")
+                    await self.send_message(chat_id, f"🤖 <b>Ask Shyam:</b>\n\n{reply}")
                 except Exception as e:
-                    logger.error(f"FarmAI Telegram error: {e}")
-                    await self.send_message(chat_id, "⚠️ FarmAI is temporarily unavailable. Please try again later.")
+                    logger.error(f"Ask Shyam Telegram error: {e}")
+                    await self.send_message(chat_id, "⚠️ Ask Shyam is temporarily unavailable. Please try again later.")
             else:
                 await self.send_message(
                     chat_id,

@@ -1,5 +1,5 @@
 """
-SmartFarm - FarmAI Tools (Phase 10)
+SmartFarm - Ask Shyam Tools (Phase 10)
 Tools that the Groq AI agent can call to fetch real farm/weather data.
 The AI must never invent weather, farm, or irrigation data.
 All values come from the actual services and database.
@@ -235,7 +235,7 @@ class FarmToolExecutor:
         """Execute a tool and return JSON string result."""
         import json
 
-        logger.info(f"FarmAI tool call: {tool_name}({args})")
+        logger.info(f"Ask Shyam tool call: {tool_name}({args})")
 
         try:
             if tool_name == "get_farm_profile":

@@ -10,7 +10,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../.
 
 from backend.database import SessionLocal
 from backend.models import User
-from backend.agents.farm_ai import farm_ai_agent
+from backend.agents.ask_shyam import ask_shyam_agent
 from backend.services.weather_service import weather_service
 
 load_dotenv()
@@ -120,7 +120,7 @@ def handle_today(db, chat_id):
     send(chat_id, "⏳ Fetching your action plan for today...")
     try:
         import asyncio
-        result = asyncio.run(farm_ai_agent.chat(
+        result = asyncio.run(ask_shyam_agent.chat(
             user_message="What is my action plan for today?",
             farm_id=farm.id,
             user_id=user.id,
@@ -158,7 +158,7 @@ def handle_chat(db, chat_id, text, is_voice=False, lang="hi"):
     send(chat_id, "🌱 Let me check...")
     try:
         import asyncio
-        result = asyncio.run(farm_ai_agent.chat(
+        result = asyncio.run(ask_shyam_agent.chat(
             user_message=text,
             farm_id=farm.id,
             user_id=user.id,
@@ -187,8 +187,8 @@ def handle_chat(db, chat_id, text, is_voice=False, lang="hi"):
                     os.remove(tmp_path)
                     
     except Exception as e:
-        logger.error(f"FarmAI chat error: {e}")
-        send(chat_id, "⚠️ Sorry, FarmAI is temporarily unavailable.")
+        logger.error(f"Ask Shyam chat error: {e}")
+        send(chat_id, "⚠️ Sorry, Ask Shyam is temporarily unavailable.")
 
 
 def handle_voice(db, chat_id, file_id):
@@ -240,7 +240,7 @@ def handle_voice(db, chat_id, file_id):
                 
             send(chat_id, f"📝 <b>Aapne kaha:</b> <i>{text}</i>")
             
-            # Feed to FarmAI
+            # Feed to Ask Shyam
             handle_chat(db, chat_id, text, is_voice=True, lang=lang)
             
         finally:
