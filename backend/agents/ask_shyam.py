@@ -112,9 +112,9 @@ class AskShyamAgent:
                         ]
                     }
                 ]
-                logger.info("Analyzing image with llama-3.2-11b-vision-preview...")
+                logger.info("Analyzing image with qwen/qwen3.8-27b...")
                 vision_resp = client.chat.completions.create(
-                    model="llama-3.2-11b-vision-preview",
+                    model="qwen/qwen3.8-27b",
                     messages=vision_messages,
                     max_tokens=1024,
                 )
@@ -137,7 +137,7 @@ class AskShyamAgent:
             logger.info(f"Ask Shyam round {round_num + 1}, messages={len(messages)}")
 
             response = client.chat.completions.create(
-                model="llama-3.1-70b-versatile",
+                model="openai/gpt-oss-120b",
                 messages=messages,
                 tools=TOOL_DEFINITIONS,
                 tool_choice="auto",
@@ -199,7 +199,7 @@ class AskShyamAgent:
         # If we hit the max rounds, get a final answer anyway
         logger.warning("Ask Shyam reached max tool rounds — forcing final response")
         final_resp = client.chat.completions.create(
-            model="llama-3.1-70b-versatile",
+            model="openai/gpt-oss-120b",
             messages=messages + [{"role": "user", "content": "Please provide your final answer based on the data gathered."}],
             max_tokens=512,
             temperature=0.3,
