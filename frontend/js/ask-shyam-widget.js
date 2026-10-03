@@ -1,7 +1,7 @@
-﻿document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", () => {
     // Inject CSS
     const style = document.createElement("style");
-    style.innerHTML = 
+    style.innerHTML = `
         /* Ask Shyam Widget Styles */
         .shyam-widget-btn {
             position: fixed;
@@ -191,12 +191,12 @@
                 height: 52px;
             }
         }
-    ;
+    `;
     document.head.appendChild(style);
 
     // Inject HTML
     const widgetContainer = document.createElement("div");
-    widgetContainer.innerHTML = 
+    widgetContainer.innerHTML = `
         <div class="shyam-chat-popup" id="shyamChatPopup">
             <div class="shyam-chat-header">
                 <img src="img/ask_shyam.jpg" alt="Ask Shyam">
@@ -220,7 +220,7 @@
         <div class="shyam-widget-btn" id="shyamWidgetBtn" title="Ask Shyam">
             <img src="img/ask_shyam.jpg" class="shyam-widget-avatar" alt="Ask Shyam">
         </div>
-    ;
+    `;
     document.body.appendChild(widgetContainer);
 
     // Logic
@@ -248,8 +248,8 @@
         msgDiv.className = 'shyam-msg ' + sender;
         
         let formattedText = text
-            .replace(/\*\*(.*?)\*\*/g, '<strong></strong>')
-            .replace(/\*(.*?)\*/g, '<em></em>')
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(.*?)\*/g, '<em>$1</em>')
             .replace(/\n/g, '<br>');
             
         msgDiv.innerHTML = formattedText;
