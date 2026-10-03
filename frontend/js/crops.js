@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function switchTab(tab) {
   activeTab = tab;
-  ['active', 'recommendations', 'catalog'].forEach(t => {
+  ['active', 'harvested', 'recommendations', 'catalog'].forEach(t => {
     document.getElementById(`tab-${t}`).classList.toggle('active', t === tab);
     document.getElementById(`panel-${t}`).classList.toggle('hidden', t !== tab);
   });
@@ -28,58 +28,130 @@ function switchTab(tab) {
 }
 
 // ── Active Crops ──
+
+window.allCropsData = [];
+
 async function loadActiveCrops() {
   try {
     const crops = await API.getFarmCrops(farmId);
-    if (crops.length === 0) {
-      document.getElementById('crops-grid').innerHTML = `
-        <div class="empty-state">
-          <div class="empty-icon">🌱</div>
-          <h3>No crops yet</h3>
-          <p>Add your first crop to get irrigation advice and crop calendars.</p>
-          <button class="btn btn-primary mt-4" onclick="showAddCropModal()">+ Add First Crop</button>
-        </div>`;
-      return;
-    }
-
-    const COLORS = ['var(--color-primary)', 'var(--color-blue)', 'var(--color-amber)', 'var(--color-purple)', 'var(--color-sky)'];
-    document.getElementById('crops-grid').innerHTML = `
-      <div class="grid-auto">
-        ${crops.map((c, i) => `
-          <div class="crop-card" style="--crop-color:${COLORS[i % COLORS.length]}">
-            <div class="flex justify-between items-start mb-2">
-              <div>
-                <div class="crop-name">${c.crop_name}</div>
-                ${c.variety ? `<div class="crop-variety">${c.variety}</div>` : ''}
-              </div>
-              <div class="flex gap-1 flex-col items-end">
-                <span class="badge ${c.status === 'active' ? 'badge-green' : 'badge-gray'}">${c.status}</span>
-              </div>
-            </div>
-            <div class="badge badge-blue mb-2">${getStageIcon(c.current_stage)} ${getStageName(c.current_stage)}</div>
-            <div class="crop-meta">
-              <div class="crop-meta-item">📐 ${c.area_acres} acres</div>
-              <div class="crop-meta-item">📍 ${c.field_name}</div>
-              ${c.sowing_date ? `<div class="crop-meta-item">🗓️ ${formatDateShort(c.sowing_date)}</div>` : ''}
-              ${c.expected_harvest_date ? `<div class="crop-meta-item">🚜 ${formatDateShort(c.expected_harvest_date)}</div>` : ''}
-            </div>
-            <div class="divider"></div>
-            <div class="flex gap-2">
-              ${c.sowing_date ? `<button class="btn btn-ghost btn-sm" onclick="showCalendar(${c.crop_id})">📅 Calendar</button>` : ''}
-              <button class="btn btn-ghost btn-sm" onclick="markHarvested(${c.crop_id})">🚜 Harvested</button>
-            </div>
-          </div>
-        `).join('')}
-        <div class="crop-card" style="border-style:dashed;display:flex;align-items:center;justify-content:center;cursor:pointer;min-height:180px" onclick="showAddCropModal()">
-          <div class="text-center text-muted">
-            <div style="font-size:2rem;margin-bottom:8px">+</div>
-            <div class="text-sm">Add New Crop</div>
-          </div>
-        </div>
-      </div>`;
+    window.allCropsData = crops;
+    renderActiveCrops();
+    renderHarvestedCrops();
   } catch (e) {
     document.getElementById('crops-grid').innerHTML = `<div class="alert alert-danger"><span class="alert-icon">❌</span><div>${e.message}</div></div>`;
   }
+}
+
+function renderActiveCrops() {
+  const activeCrops = window.allCropsData.filter(c => c.status !== 'harvested');
+  
+  if (activeCrops.length === 0) {
+    document.getElementById('crops-grid').innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">🌱</div>
+        <h3>No active crops</h3>
+        <p>Add your first crop to get irrigation advice and crop calendars.</p>
+        <button class="btn btn-primary mt-4" onclick="showAddCropModal()">+ Add Crop</button>
+      </div>`;
+    return;
+  }
+
+  const COLORS = ['var(--color-primary)', 'var(--color-blue)', 'var(--color-amber)', 'var(--color-purple)', 'var(--color-sky)'];
+  document.getElementById('crops-grid').innerHTML = `
+    <div class="grid-auto" style="justify-content: center;">
+      ${activeCrops.map((c, i) => `
+        <div class="crop-card" style="--crop-color:${COLORS[i % COLORS.length]}">
+          <div class="flex justify-between items-start mb-2">
+            <div>
+              <div class="crop-name">${c.crop_name}</div>
+              ${c.variety ? `<div class="crop-variety">${c.variety}</div>` : ''}
+            </div>
+            <div class="flex gap-1 flex-col items-end">
+              <span class="badge ${c.status === 'active' ? 'badge-green' : 'badge-gray'}">${c.status}</span>
+            </div>
+          </div>
+          <div class="badge badge-blue mb-2">${getStageIcon(c.current_stage)} ${getStageName(c.current_stage)}</div>
+          <div class="crop-meta">
+            <div class="crop-meta-item">📐 ${c.area_acres} acres</div>
+            <div class="crop-meta-item">📍 ${c.field_name}</div>
+            ${c.sowing_date ? `<div class="crop-meta-item">🗓️ ${formatDateShort(c.sowing_date)}</div>` : ''}
+            ${c.expected_harvest_date ? `<div class="crop-meta-item">🚜 ${formatDateShort(c.expected_harvest_date)}</div>` : ''}
+          </div>
+          <div class="divider"></div>
+          <div class="flex gap-2">
+            ${c.sowing_date ? `<button class="btn btn-ghost btn-sm" onclick="showCalendar(${c.crop_id})">📅 Calendar</button>` : ''}
+            <button class="btn btn-ghost btn-sm" onclick="markHarvested(${c.crop_id})">🚜 Harvested</button>
+            <button class="btn btn-ghost btn-sm text-red" style="color: red;" onclick="deleteCropEntry(${c.crop_id})" title="Remove Crop">🗑️</button>
+          </div>
+        </div>
+      `).join('')}
+      <div class="crop-card" style="border-style:dashed;display:flex;align-items:center;justify-content:center;cursor:pointer;min-height:180px" onclick="showAddCropModal()">
+        <div class="text-center text-muted">
+          <div style="font-size:2rem;margin-bottom:8px">+</div>
+          <div class="text-sm">Add New Crop</div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderHarvestedCrops() {
+  const period = document.getElementById('harvest-period-filter') ? document.getElementById('harvest-period-filter').value : 'all';
+  let harvestedCrops = window.allCropsData.filter(c => c.status === 'harvested');
+  
+  if (period !== 'all') {
+    const months = parseInt(period);
+    const cutoffDate = new Date();
+    cutoffDate.setMonth(cutoffDate.getMonth() - months);
+    harvestedCrops = harvestedCrops.filter(c => {
+       const dateToCheck = c.expected_harvest_date || c.sowing_date;
+       if (!dateToCheck) return true;
+       return new Date(dateToCheck) >= cutoffDate;
+    });
+  }
+  
+  const grid = document.getElementById('harvested-grid');
+  if (!grid) return;
+  
+  if (harvestedCrops.length === 0) {
+    grid.innerHTML = `<div class="empty-state"><h3>No harvested crops in this period.</h3></div>`;
+    return;
+  }
+  
+  const COLORS = ['var(--color-primary)', 'var(--color-blue)', 'var(--color-amber)', 'var(--color-purple)', 'var(--color-sky)'];
+  grid.innerHTML = `
+    <div class="grid-auto" style="justify-content: center;">
+      ${harvestedCrops.map((c, i) => `
+        <div class="crop-card" style="--crop-color:${COLORS[i % COLORS.length]}; filter: grayscale(50%);">
+          <div class="flex justify-between items-start mb-2">
+            <div>
+              <div class="crop-name">${c.crop_name}</div>
+              ${c.variety ? `<div class="crop-variety">${c.variety}</div>` : ''}
+            </div>
+            <div>
+              <span class="badge badge-gray">Harvested</span>
+            </div>
+          </div>
+          <div class="crop-meta">
+            <div class="crop-meta-item">📐 ${c.area_acres} acres</div>
+            <div class="crop-meta-item">📍 ${c.field_name}</div>
+          </div>
+          <div class="divider"></div>
+          <div class="flex gap-2">
+            <button class="btn btn-ghost btn-sm text-red" style="color: red;" onclick="deleteCropEntry(${c.crop_id})">🗑️ Delete Record</button>
+          </div>
+        </div>
+      `).join('')}
+    </div>`;
+}
+
+async function deleteCropEntry(cropId) {
+    if(!confirm("Are you sure you want to remove this crop?")) return;
+    try {
+        await API.deleteCrop(cropId);
+        await loadActiveCrops();
+    } catch(e) {
+        alert("Failed to delete crop: " + e.message);
+    }
 }
 
 // ── Calendar ──
@@ -246,8 +318,14 @@ async function saveCrop() {
 }
 
 async function markHarvested(cropId) {
+  if(!confirm("Mark this crop as harvested?")) return;
   try {
-    await API.updateCrop(cropId, { status: 'harvested' });
+    await API.updateCrop(cropId, { status: "harvested" });
+    await loadActiveCrops();
+  } catch (e) {
+    alert("Failed to mark as harvested: " + e.message);
+  }
+});
     showToast('Crop marked as harvested!', 'success');
     loadActiveCrops();
   } catch (e) {
