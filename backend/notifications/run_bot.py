@@ -154,6 +154,64 @@ def handle_chat(db, chat_id, text):
         send(chat_id, "⚠️ Sorry, FarmAI is temporarily unavailable.")
 
 
+def handle_voice(db, chat_id, file_id):
+    user = db.query(User).filter(User.telegram_chat_id == str(chat_id)).first()
+    if not user:
+        send(chat_id, "⚠️ Your account is not linked yet. Use <code>/start CODE</code>.")
+        return
+        
+    send(chat_id, "🎙️ Sun raha hoon... (Listening...)")
+    
+    try:
+        r_file = httpx.get(f"{BASE_URL}/getFile", params={"file_id": file_id}, timeout=20)
+        file_path = r_file.json().get("result", {}).get("file_path")
+        if not file_path:
+            send(chat_id, "❌ Audio download failed.")
+            return
+            
+        download_url = f"https://api.telegram.org/file/bot{TOKEN}/{file_path}"
+        r_audio = httpx.get(download_url, timeout=30)
+        if r_audio.status_code != 200:
+            send(chat_id, "❌ Could not download audio.")
+            return
+            
+        import tempfile
+        import os
+        from groq import Groq
+        from backend.config.settings import settings
+        
+        groq_client = Groq(api_key=settings.groq_api_key)
+        
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".ogg") as tmp:
+            tmp.write(r_audio.content)
+            tmp_path = tmp.name
+            
+        try:
+            with open(tmp_path, "rb") as audio_file:
+                transcription = groq_client.audio.transcriptions.create(
+                  file=(os.path.basename(tmp_path), audio_file.read()),
+                  model="whisper-large-v3",
+                  response_format="json"
+                )
+            
+            text = transcription.text
+            if not text or not text.strip():
+                send(chat_id, "🤷 Aawaz saaf nahi aayi. Kripya dobara bolen.")
+                return
+                
+            send(chat_id, f"📝 <b>Aapne kaha:</b> <i>{text}</i>")
+            
+            # Feed to FarmAI
+            handle_chat(db, chat_id, text)
+            
+        finally:
+            os.remove(tmp_path)
+            
+    except Exception as e:
+        logger.error(f"Voice handling error: {e}")
+        send(chat_id, "⚠️ Voice processing mein error aayi.")
+
+
 def main():
     offset = None
     logger.info("=== BOT STARTED ===")
@@ -172,23 +230,28 @@ def main():
                 
             msg = update.get("message")
             
-            if msg and "text" in msg:
+            if msg:
                 chat_id = msg["chat"]["id"]
-                text = msg["text"].strip()
-                logger.info(f"Message from {chat_id}: {text}")
                 
                 db = SessionLocal()
                 try:
-                    if text.startswith("/start"):
-                        handle_start(db, chat_id, text)
-                    elif text.startswith("/status"):
-                        handle_status(db, chat_id)
-                    elif text.startswith("/today"):
-                        handle_today(db, chat_id)
-                    elif text.startswith("/help"):
-                        handle_help(chat_id)
-                    else:
-                        handle_chat(db, chat_id, text)
+                    if "text" in msg:
+                        text = msg["text"].strip()
+                        logger.info(f"Text Message from {chat_id}: {text}")
+                        if text.startswith("/start"):
+                            handle_start(db, chat_id, text)
+                        elif text.startswith("/status"):
+                            handle_status(db, chat_id)
+                        elif text.startswith("/today"):
+                            handle_today(db, chat_id)
+                        elif text.startswith("/help"):
+                            handle_help(chat_id)
+                        else:
+                            handle_chat(db, chat_id, text)
+                    elif "voice" in msg:
+                        file_id = msg["voice"]["file_id"]
+                        logger.info(f"Voice Message from {chat_id}")
+                        handle_voice(db, chat_id, file_id)
                 finally:
                     db.close()
         
