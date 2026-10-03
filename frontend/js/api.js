@@ -47,11 +47,23 @@ async function apiFetch(path, options = {}) {
     try { data = JSON.parse(text); } catch { data = { message: text }; }
 
     if (!response.ok) {
-      // Auto-logout if user or farm is not found (e.g. database cleared)
+      // Auto-recreate user/farm if DB wiped to prevent annoying logouts
       if (response.status === 404 && (path.includes('/users/') || path.includes('/farms/'))) {
-        State.clear();
-        window.location.href = 'index.html';
-        return;
+        try {
+          console.warn("DB reset detected! Auto-recreating user and farm...");
+          const uRes = await fetch(`${API_BASE}/users/`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: State.userName || "Farmer", phone: "9999999999", language_pref: "en" }) });
+          const u = await uRes.json();
+          const fRes = await fetch(`${API_BASE}/farms/?user_id=${u.id}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: State.farmName || "My Farm", location: "India", total_area_acres: 5.0 }) });
+          const f = await fRes.json();
+          State.set(u.id, f.id, u.name, f.name);
+          // Let the user refresh manually or just reload the page for them smoothly
+          window.location.reload();
+          return;
+        } catch(e) {
+          State.clear();
+          window.location.href = 'index.html';
+          return;
+        }
       }
       const msg = data?.detail || data?.message || `HTTP ${response.status}`;
       throw new APIError(msg, response.status, data);
