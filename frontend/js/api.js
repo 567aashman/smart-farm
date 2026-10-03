@@ -296,7 +296,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let currentLang = 'en';
     const match = document.cookie.match(/googtrans=\/en\/([a-z]{2})/);
     if (match) currentLang = match[1];
-    const toggles = document.querySelectorAll('.globalLangToggle');
-    toggles.forEach(t => t.value = currentLang);
+    const checkboxes = document.querySelectorAll('.globalLangToggleCheckbox');
+    checkboxes.forEach(c => c.checked = (currentLang === 'hi'));
 });
 // ──────────────────────────────────────

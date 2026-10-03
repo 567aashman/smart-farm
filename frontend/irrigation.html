@@ -26,12 +26,12 @@
         </div>
       </div>
       
-        <div style="padding: 10px 16px; display:flex; align-items:center; gap:10px; border-top:1px solid var(--color-border); margin-top:10px;" class="skiptranslate">
-            <span style="font-size:1.2rem;">🌐</span>
-            <select class="globalLangToggle" style="flex-grow:1; background:var(--color-surface); color:var(--color-text); border:1px solid var(--color-border); border-radius:6px; padding:4px; font-weight:bold; cursor:pointer;" onchange="changeWebsiteLanguage(this.value)">
-                <option value="en">English</option>
-                <option value="hi">हिंदी</option>
-            </select>
+        <div style="padding: 10px 16px; display:flex; align-items:center; justify-content:space-between; border-top:1px solid var(--color-border); margin-top:10px;" class="skiptranslate">
+            <span style="font-size:0.95rem; font-weight:bold; color:var(--color-text);">🌐 English / हिंदी</span>
+            <label class="lang-switch">
+                <input type="checkbox" class="globalLangToggleCheckbox" onchange="changeWebsiteLanguage(this.checked ? 'hi' : 'en')">
+                <span class="lang-slider"></span>
+            </label>
         </div>
       <div class="sidebar-footer">
         <div class="farm-info">
@@ -94,6 +94,6 @@
   <div id="toast-container"></div>
   <script src="js/api.js"></script>
   <script src="js/irrigation.js"></script>
-  <script src="js/ask-shyam-widget.js?v=11"></script>
+  <script src="js/ask-shyam-widget.js?v=12"></script>
 </body>
 </html>
