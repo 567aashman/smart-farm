@@ -277,58 +277,60 @@ function requireAuth(redirectTo = 'onboarding.html') {
 })();
 
 window.changeWebsiteLanguage = function(langCode) {
+    const selectField = document.querySelector("#google_translate_element select");
+    
     if (langCode === 'en') {
-        // Google Translate doesn't revert cleanly via JS, so we clear cookie and reload
         document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
         document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; domain=' + window.location.hostname + '; path=/;';
-        const shyamToggle = document.getElementById("shyamLangToggle");
-        if (shyamToggle) shyamToggle.value = 'en';
-        window.location.reload();
-        return;
-    }
-
-    const selectField = document.querySelector("#google_translate_element select");
-    if(selectField) {
-        selectField.value = langCode;
-        selectField.dispatchEvent(new Event('change'));
+        
+        // Try to revert by setting select value to empty string which is the default for 'Original'
+        if(selectField) {
+            selectField.value = "";
+            selectField.dispatchEvent(new Event('change'));
+        }
+        
+        // As a fallback, try to click the clear button in the iframe if it exists
+        const restoreFrame = document.querySelector('iframe.goog-te-banner-frame');
+        if (restoreFrame) {
+            try {
+                const restoreBtn = restoreFrame.contentWindow.document.querySelector('.goog-te-button button');
+                if (restoreBtn) restoreBtn.click();
+            } catch (e) {}
+        }
+        
+        // Only reload if the text is STILL translated after 500ms
+        setTimeout(() => {
+            const isTranslated = document.querySelector('html').classList.contains('translated-ltr');
+            if (isTranslated) {
+                window.location.reload();
+            }
+        }, 500);
+        
     } else {
-        if (!window._gtRetries) window._gtRetries = 0;
-        if (window._gtRetries < 10) {
-            window._gtRetries++;
-            setTimeout(() => window.changeWebsiteLanguage(langCode), 500);
+        if(selectField) {
+            selectField.value = langCode;
+            selectField.dispatchEvent(new Event('change'));
+        } else {
+            if (!window._gtRetries) window._gtRetries = 0;
+            if (window._gtRetries < 10) {
+                window._gtRetries++;
+                setTimeout(() => window.changeWebsiteLanguage(langCode), 500);
+            }
         }
     }
     
     const shyamToggle = document.getElementById("shyamLangToggle");
     if (shyamToggle) shyamToggle.value = langCode;
     
-    const toggleBtn = document.getElementById('globalLangToggleBtn');
-    if (toggleBtn) {
-        toggleBtn.innerHTML = langCode === 'hi' ? '🌐 View in English' : '🌐 हिंदी (Translate to Hindi)';
-    }
+    const checkboxes = document.querySelectorAll('.globalLangToggleCheckbox');
+    checkboxes.forEach(c => c.checked = (langCode === 'hi'));
 };
-
-document.addEventListener("DOMContentLoaded", () => {
-    let currentLang = 'en';
-    const match = document.cookie.match(/googtrans=\/en\/([a-z]{2})/);
-    if (match) currentLang = match[1];
-    const toggleBtn = document.getElementById('globalLangToggleBtn');
-    if (toggleBtn) {
-        toggleBtn.innerHTML = currentLang === 'hi' ? '🌐 View in English' : '🌐 हिंदी (Translate to Hindi)';
-    }
-});
-// ──────────────────────────────────────
-
 
 window.toggleWebsiteLanguage = function() {
-    const selectField = document.querySelector("#google_translate_element select");
-    let currentLang = 'en';
-    if (selectField && selectField.value) {
-        currentLang = selectField.value;
-    } else {
-        const match = document.cookie.match(/googtrans=\/en\/([a-z]{2})/);
-        if (match) currentLang = match[1];
-    }
-    const newLang = currentLang === 'en' ? 'hi' : 'en';
+    // Check if html has 'translated-ltr' class added by Google Translate
+    const isTranslated = document.querySelector('html').classList.contains('translated-ltr');
+    const newLang = isTranslated ? 'en' : 'hi';
     window.changeWebsiteLanguage(newLang);
 };
+// ──────────────────────────────────────
+
