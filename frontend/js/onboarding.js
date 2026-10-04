@@ -71,7 +71,9 @@ async function nextStep() {
       showSuccessScreen();
     }
   } catch (err) {
-    showToast(err.message || 'Something went wrong. Please try again.', 'error');
+    const msg = err.message || 'Something went wrong. Please try again.';
+    showToast(msg, 'error');
+    alert('Error: ' + msg); // fallback for when toast is not visible
   } finally {
     btn.disabled = false;
     updateStepUI();
