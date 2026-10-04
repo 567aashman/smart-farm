@@ -414,6 +414,7 @@ class AskShyamRequest(BaseModel):
     voice_base64: Optional[str] = None
     generate_audio: bool = False
     conversation_history: Optional[List[Dict[str, str]]] = []
+    language: Optional[str] = "en"
 
 
 class AskShyamResponse(BaseModel):
