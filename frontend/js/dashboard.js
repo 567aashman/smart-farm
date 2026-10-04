@@ -4,7 +4,7 @@
  */
 
 // Auth guard
-if (!requireAuth()) { /* redirected */ }
+if (!requireAuth()) { throw new Error("Redirecting to onboarding"); }
 
 const farmId = State.farmId;
 const userId = State.userId;
