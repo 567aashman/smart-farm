@@ -3,7 +3,15 @@
  * Central fetch wrapper for all backend calls.
  */
 
-const API_BASE = '/api';
+const API_BASE = (function() {
+  const loc = window.location;
+  // If running on backend port 8000 or on production domain (Railway/Render)
+  if (loc.port === '8000' || (!loc.port && loc.protocol.startsWith('http') && !loc.hostname.includes('localhost') && !loc.hostname.includes('127.0.0.1'))) {
+    return '/api';
+  }
+  // If running via VS Code Live Server (port 5500), other dev servers, or file:///
+  return 'http://127.0.0.1:8000/api';
+})();
 
 // ── Session state (stored in localStorage) ──
 const State = {
