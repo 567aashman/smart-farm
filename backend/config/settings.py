@@ -13,13 +13,18 @@ load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), "..", "..", ".en
 
 
 class Settings(BaseSettings):
-    # Database
-    database_url: str = "postgresql://postgres:password@localhost:5432/smartfarm"
+    # Database (defaults to SQLite if no PostgreSQL URL is provided)
+    database_url: str = ""
     
     @field_validator("database_url", mode="before")
     def fix_postgres_url(cls, v):
         if not v or not str(v).strip():
-            return "sqlite:///./smartfarm.db"
+            # Check Railway-specific environment variables
+            alt_url = os.environ.get("DATABASE_URL") or os.environ.get("DATABASE_PUBLIC_URL") or os.environ.get("DATABASE_PRIVATE_URL")
+            if alt_url and alt_url.strip():
+                v = alt_url.strip()
+            else:
+                return "sqlite:///./smartfarm.db"
         if isinstance(v, str):
             v = v.strip().strip("'").strip('"')
             if v.startswith("postgres://"):
@@ -35,7 +40,7 @@ class Settings(BaseSettings):
     weather_api_base: str = "https://api.openweathermap.org/data/2.5"
 
     # Telegram
-    telegram_bot_token: str = "8732368942:AAFRVU2k_iHAittVrl7MlKRb2waBBHKVHnU"
+    telegram_bot_token: str = ""
     telegram_bot_username: str = ""
 
     # App
@@ -43,10 +48,17 @@ class Settings(BaseSettings):
     app_secret_key: str = "change_this_in_production"
     cors_origins: str = "http://localhost:3000,http://127.0.0.1:5500,null"
 
-    # Server
+    # Server (Railway assigns dynamic PORT)
     backend_host: str = "0.0.0.0"
     backend_port: int = 8000
     log_level: str = "INFO"
+
+    @field_validator("backend_port", mode="before")
+    def resolve_backend_port(cls, v):
+        port_env = os.environ.get("PORT")
+        if port_env and str(port_env).isdigit():
+            return int(port_env)
+        return v
 
     @property
     def cors_origins_list(self) -> List[str]:

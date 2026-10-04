@@ -100,9 +100,12 @@ async def lifespan(app: FastAPI):
 
     # Start Telegram bot in background thread if token is present
     if settings.telegram_bot_token:
-        bot_thread = threading.Thread(target=run_telegram_bot, daemon=True)
-        bot_thread.start()
-        logger.info("✅ Telegram bot background thread started.")
+        try:
+            bot_thread = threading.Thread(target=run_telegram_bot, daemon=True)
+            bot_thread.start()
+            logger.info("✅ Telegram bot background thread started.")
+        except Exception as e:
+            logger.warning(f"⚠️ Telegram bot thread failed to start: {e}")
 
     # Initialize database tables
     try:
@@ -112,7 +115,10 @@ async def lifespan(app: FastAPI):
         logger.error(f"❌ Database initialization failed: {e}")
 
     # Seed crop catalog
-    seed_crop_catalog()
+    try:
+        seed_crop_catalog()
+    except Exception as e:
+        logger.warning(f"⚠️ Crop catalog seed encountered an issue: {e}")
 
     # Start scheduler
     try:
@@ -218,10 +224,11 @@ if os.path.exists(frontend_dir):
 # ── Entry point for direct run ──
 if __name__ == "__main__":
     import uvicorn
+    port = int(os.environ.get("PORT", getattr(settings, "backend_port", 8000)))
     uvicorn.run(
         "backend.main:app",
-        host=settings.backend_host,
-        port=settings.backend_port,
+        host="0.0.0.0",
+        port=port,
         reload=settings.is_development,
         log_level=settings.log_level.lower(),
     )
