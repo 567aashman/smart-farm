@@ -272,7 +272,7 @@ function requireAuth(redirectTo = 'onboarding.html') {
     document.body.appendChild(gtScript);
 
     const style = document.createElement('style');
-    style.innerHTML = "html { height: 100%; margin: 0 !important; padding: 0 !important; }
+    style.innerHTML = `html { height: 100%; margin: 0 !important; padding: 0 !important; }
 body { position: static !important; top: 0px !important; min-height: 100% !important; }
 iframe.goog-te-banner-frame { display: none !important; visibility: hidden !important; }
 .goog-te-banner-frame.skiptranslate { display: none !important; }
@@ -286,7 +286,7 @@ div#goog-gt- { display: none !important; }
 .goog-logo-link { display: none !important; }
 .goog-te-gadget { color: transparent !important; }
 .goog-te-gadget .goog-te-combo { margin: 0 !important; }
-#google_translate_element { opacity: 0; position: absolute; top: -100px; z-index: -999; width: 0; height: 0; overflow: hidden; display: block !important; }";
+#google_translate_element { opacity: 0; position: absolute; top: -100px; z-index: -999; width: 0; height: 0; overflow: hidden; display: block !important; }`;
     document.head.appendChild(style);
 })();
 
