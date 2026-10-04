@@ -34,7 +34,8 @@ async function loadRecommendation() {
         </div>
         ${needed ? `
           <div class="irrigation-amount" style="font-size:3.5rem">${rec.estimated_requirement_mm?.toFixed(0) || '—'}<sup>mm</sup></div>
-          <div class="text-sm mt-2">Recommended time: <span class="text-primary">${rec.recommended_time}</span></div>
+          <div class="text-sm mt-1 mb-2 text-blue">approx. <strong>${((rec.estimated_requirement_mm || 0) * 4000).toLocaleString()} Liters</strong> per acre</div>
+          <div class="text-sm">Recommended time: <span class="text-primary">${rec.recommended_time}</span></div>
           ${rec.duration_hours ? `<div class="text-sm">Duration: ~${rec.duration_hours} hours</div>` : ''}
         ` : `
           <div class="text-sm mt-4 text-dim">${rec.skip_reason || 'Soil moisture is adequate.'}</div>
@@ -119,17 +120,24 @@ async function loadHistory() {
               <th style="padding:10px">Date</th>
               <th style="padding:10px">Amount</th>
               <th style="padding:10px">Status</th>
+              <th style="padding:10px;text-align:right">Action</th>
             </tr>
           </thead>
           <tbody>
             ${history.map(r => `
               <tr style="border-bottom:1px solid var(--color-surface-2)">
                 <td style="padding:10px">${formatDate(r.actual_date || r.scheduled_date)}</td>
-                <td style="padding:10px;font-weight:600;color:var(--color-primary)">${r.amount_mm || '—'} mm</td>
+                <td style="padding:10px;font-weight:600;color:var(--color-primary)">
+                  ${r.amount_mm || '—'} mm<br>
+                  <span style="font-size:0.7rem;font-weight:normal;color:var(--color-text-muted)">~${((r.amount_mm || 0) * 4000).toLocaleString()} L/acre</span>
+                </td>
                 <td style="padding:10px">
                   ${r.completed ? '<span class="badge badge-green">Completed</span>' : 
                     r.skipped ? '<span class="badge badge-gray">Skipped</span>' : 
                     '<span class="badge badge-amber">Pending</span>'}
+                </td>
+                <td style="padding:10px;text-align:right">
+                  <button class="btn btn-sm" style="color:var(--color-red);padding:4px 8px;background:rgba(239,68,68,0.1);border:none;" onclick="deleteLog(${r.id})">🗑️</button>
                 </td>
               </tr>
             `).join('')}
@@ -194,15 +202,51 @@ async function loadMonsoon() {
 }
 
 // ── Actions ──
-async function logManualIrrigation() {
-  const amount = prompt("Enter approximate amount of water in mm (e.g., 20):", "20");
-  if (amount !== null && !isNaN(parseFloat(amount))) {
+// ── Actions ──
+function logManualIrrigation() {
+  document.getElementById('irr-amount').value = '';
+  document.getElementById('log-irrigation-modal').classList.remove('hidden');
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.add('hidden');
+}
+
+async function submitIrrigationLog() {
+  const amountStr = document.getElementById('irr-amount').value;
+  if (!amountStr || isNaN(parseFloat(amountStr))) {
+    showToast("Please enter a valid amount.", "error");
+    return;
+  }
+  
+  const amount = parseFloat(amountStr);
+  const btn = document.getElementById('btn-submit-irr');
+  btn.disabled = true;
+  btn.textContent = 'Logging...';
+
+  try {
+    // Note: If you want to log the source, you can pass it to the backend when the API supports it.
+    // const source = document.getElementById('irr-source').value;
+    await API.logIrrigation(farmId, amount);
+    showToast(`Logged ${amount}mm (~${(amount*4000).toLocaleString()} L/acre) irrigation!`, 'success');
+    closeModal('log-irrigation-modal');
+    loadAll();
+  } catch (e) {
+    showToast(`Failed to log: ${e.message}`, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Log Now';
+  }
+}
+
+async function deleteLog(id) {
+  if (confirm("Are you sure you want to delete this irrigation log?")) {
     try {
-      await API.logIrrigation(farmId, parseFloat(amount));
-      showToast(`Logged ${amount}mm irrigation!`, 'success');
-      loadAll();
+      await API.deleteIrrigation(id);
+      showToast("Log deleted successfully", "success");
+      loadHistory();
     } catch (e) {
-      showToast(`Failed to log: ${e.message}`, 'error');
+      showToast(`Failed to delete: ${e.message}`, "error");
     }
   }
 }

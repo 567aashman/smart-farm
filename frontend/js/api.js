@@ -122,6 +122,7 @@ const API = {
   getIrrigationRec: (farmId) => apiFetch(`/irrigation/recommend/farm/${farmId}`),
   logIrrigation: (farmId, amountMm) => apiFetch(`/irrigation/records?farm_id=${farmId}&amount_mm=${amountMm}`, { method: 'POST' }),
   getIrrigationHistory: (farmId) => apiFetch(`/irrigation/history/farm/${farmId}`),
+  deleteIrrigation: (recordId) => apiFetch(`/irrigation/records/${recordId}`, { method: 'DELETE' }),
 
   // Risks
   getRisks: (farmId) => apiFetch(`/risks/farm/${farmId}`),
