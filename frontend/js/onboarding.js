@@ -256,3 +256,42 @@ async function initOnboarding() {
 }
 
 initOnboarding();
+
+
+function initLocationAutocomplete() {
+    const input = document.getElementById('farm-location');
+    if (input && typeof google !== 'undefined' && google.maps && google.maps.places) {
+        const autocomplete = new google.maps.places.Autocomplete(input, {
+            types: ['(regions)'],
+            componentRestrictions: { country: 'in' }
+        });
+        
+        autocomplete.addListener('place_changed', function() {
+            const place = autocomplete.getPlace();
+            if (place.address_components) {
+                let stateStr = '';
+                for (let component of place.address_components) {
+                    if (component.types.includes('administrative_area_level_1')) {
+                        stateStr = component.long_name;
+                        break;
+                    }
+                }
+                if (stateStr) {
+                    const stateSelect = document.getElementById('farm-state');
+                    if (stateSelect) {
+                        for (let i = 0; i < stateSelect.options.length; i++) {
+                            if (stateSelect.options[i].text === stateStr || stateSelect.options[i].value === stateStr) {
+                                stateSelect.selectedIndex = i;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+}
+
+window.addEventListener('load', () => {
+    setTimeout(initLocationAutocomplete, 500);
+});
