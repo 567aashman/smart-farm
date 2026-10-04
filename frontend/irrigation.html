@@ -91,9 +91,49 @@
     </div>
   </div>
 
+  <!-- Log Irrigation Modal -->
+  <div class="modal-overlay hidden" id="log-irrigation-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <span class="modal-title">💧 Log Irrigation</span>
+        <button class="modal-close" onclick="closeModal('log-irrigation-modal')">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label" for="irr-amount">Amount of water (in mm) *</label>
+          <input class="form-control" type="number" id="irr-amount" placeholder="e.g. 20">
+        </div>
+        
+        <div class="form-group mt-3">
+          <label class="form-label" for="irr-source">Irrigation Source</label>
+          <select class="form-control" id="irr-source">
+            <option value="drip">Drip Irrigation</option>
+            <option value="sprinkler">Sprinkler System</option>
+            <option value="flood">Flood / Surface</option>
+            <option value="rain">Natural Rainfall</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+
+        <div class="alert alert-info mt-4">
+          <span class="alert-icon">💡</span>
+          <div class="alert-content">
+            <div class="alert-title">How to calculate?</div>
+            <div style="font-size:0.8rem; margin-top:2px;">
+              <strong>1 mm of irrigation</strong> equals approximately <strong>4,000 Liters per acre</strong>.<br>
+              <em>E.g. For a 2 acre farm, 20mm = 4,000 × 2 × 20 = 160,000 Liters.</em>
+            </div>
+          </div>
+        </div>
+        
+        <button class="btn btn-primary mt-4" style="width: 100%" onclick="submitIrrigationLog()" id="btn-submit-irr">Log Now</button>
+      </div>
+    </div>
+  </div>
+
   <div id="toast-container"></div>
-  <script src="js/api.js"></script>
-  <script src="js/irrigation.js"></script>
-  <script src="js/ask-shyam-widget.js?v=20"></script>
+  <script src="js/api.js?v=10"></script>
+  <script src="js/irrigation.js?v=2"></script>
+  <script src="js/ask-shyam-widget.js?v=22"></script>
 </body>
 </html>

@@ -171,6 +171,15 @@ def get_irrigation_history(farm_id: int, limit: int = 10, db: Session = Depends(
         for r in records
     ]
 
+@irrigation_router.delete("/records/{record_id}")
+def delete_irrigation_record(record_id: int, db: Session = Depends(get_db)):
+    rec = db.query(IrrigationRecord).filter(IrrigationRecord.id == record_id).first()
+    if not rec:
+        raise HTTPException(status_code=404, detail="Record not found")
+    db.delete(rec)
+    db.commit()
+    return {"message": "Record deleted"}
+
 
 # ─────────────────────────────────────────────
 # RISK ROUTES (Phase 7)
