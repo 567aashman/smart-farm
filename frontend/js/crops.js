@@ -135,7 +135,12 @@ function renderHarvestedCrops() {
   const COLORS = ['var(--color-primary)', 'var(--color-blue)', 'var(--color-amber)', 'var(--color-purple)', 'var(--color-sky)'];
   grid.innerHTML = `
     <div class="grid-auto" style="justify-content: center;">
-      ${harvestedCrops.map((c, i) => `
+      ${harvestedCrops.map((c, i) => {
+        const defaultMSP = getDefaultMSP(c.crop_name);
+        const defaultYield = getDefaultYield(c.crop_name, c.area_acres);
+        const defaultRevenue = defaultYield * defaultMSP;
+        
+        return `
         <div class="crop-card" style="--crop-color:${COLORS[i % COLORS.length]}; filter: grayscale(50%);">
           <div class="flex justify-between items-start mb-2">
             <div>
@@ -158,15 +163,15 @@ function renderHarvestedCrops() {
             <div class="flex gap-2" style="align-items: center; margin-bottom: 8px;">
               <div style="flex:1">
                  <label style="font-size:0.7rem; color:var(--color-text-muted)">Est. Yield (Qtls)</label>
-                 <input type="number" id="yield-${c.crop_id}" class="form-control" style="padding: 4px 8px; font-size: 0.85rem;" placeholder="e.g. 50" oninput="calculateRevenue(${c.crop_id})">
+                 <input type="number" id="yield-${c.crop_id}" class="form-control" style="padding: 4px 8px; font-size: 0.85rem;" placeholder="e.g. 50" value="${defaultYield}" oninput="calculateRevenue(${c.crop_id})">
               </div>
               <div style="flex:1">
                  <label style="font-size:0.7rem; color:var(--color-text-muted)">MSP (₹ / Qtl)</label>
-                 <input type="number" id="msp-${c.crop_id}" class="form-control" style="padding: 4px 8px; font-size: 0.85rem;" placeholder="2300" value="${getDefaultMSP(c.crop_name)}" oninput="calculateRevenue(${c.crop_id})">
+                 <input type="number" id="msp-${c.crop_id}" class="form-control" style="padding: 4px 8px; font-size: 0.85rem;" placeholder="2300" value="${defaultMSP}" oninput="calculateRevenue(${c.crop_id})">
               </div>
             </div>
             <div style="font-size:0.85rem; text-align: right;">
-              Est. Revenue: <strong id="revenue-${c.crop_id}" style="color: #10b981; font-size: 1.1rem;">₹ 0</strong>
+              Est. Revenue: <strong id="revenue-${c.crop_id}" style="color: #10b981; font-size: 1.1rem;">₹ ${defaultRevenue.toLocaleString('en-IN')}</strong>
             </div>
           </div>
 
@@ -174,7 +179,7 @@ function renderHarvestedCrops() {
             <button class="btn btn-ghost btn-sm text-red" style="color: red;" onclick="deleteCropEntry(${c.crop_id})">🗑️ Delete Record</button>
           </div>
         </div>
-      `).join('')}
+      `}).join('')}
     </div>`;
 }
 
@@ -188,6 +193,22 @@ function getDefaultMSP(cropName) {
     if (name.includes('soybean')) return 4600;
     if (name.includes('sugarcane')) return 315; // per quintal FRP
     return 2000; // default fallback
+}
+
+function getDefaultYield(cropName, areaAcres) {
+    // Returns estimated yield in Quintals (1 Quintal = 100 kg) based on area
+    const name = cropName.toLowerCase();
+    let qtlPerAcre = 10; // Default
+    
+    if (name.includes('wheat')) qtlPerAcre = 18; // ~15-20 qtl/acre
+    else if (name.includes('rice') || name.includes('paddy')) qtlPerAcre = 20; // ~18-22 qtl/acre
+    else if (name.includes('cotton')) qtlPerAcre = 10; // ~8-12 qtl/acre
+    else if (name.includes('mustard')) qtlPerAcre = 7; // ~6-8 qtl/acre
+    else if (name.includes('chana') || name.includes('gram')) qtlPerAcre = 6; // ~5-8 qtl/acre
+    else if (name.includes('soybean')) qtlPerAcre = 9; // ~8-10 qtl/acre
+    else if (name.includes('sugarcane')) qtlPerAcre = 350; // ~300-400 qtl/acre
+    
+    return Math.round(qtlPerAcre * areaAcres);
 }
 
 window.calculateRevenue = function(cropId) {
