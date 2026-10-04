@@ -272,21 +272,22 @@ function requireAuth(redirectTo = 'onboarding.html') {
     document.body.appendChild(gtScript);
 
     const style = document.createElement('style');
-    style.innerHTML = "html { height: 100%; margin: 0 !important; padding: 0 !important; }
-body { position: static !important; top: 0px !important; min-height: 100% !important; }
-iframe.goog-te-banner-frame { display: none !important; visibility: hidden !important; }
-.goog-te-banner-frame.skiptranslate { display: none !important; }
-.goog-te-banner-frame { display: none !important; }
-#goog-gt-tt, .goog-te-balloon-frame { display: none !important; visibility: hidden !important; }
-.goog-tooltip { display: none !important; }
-.goog-tooltip:hover { display: none !important; }
-.goog-text-highlight { background-color: transparent !important; box-shadow: none !important; }
-.skiptranslate > iframe.goog-te-banner-frame { display: none !important; }
-div#goog-gt- { display: none !important; }
-.goog-logo-link { display: none !important; }
-.goog-te-gadget { color: transparent !important; }
-.goog-te-gadget .goog-te-combo { margin: 0 !important; }
-";
+    style.textContent = [
+        "html { height: 100%; margin: 0 !important; padding: 0 !important; }",
+        "body { position: static !important; top: 0px !important; min-height: 100% !important; }",
+        "iframe.goog-te-banner-frame { display: none !important; visibility: hidden !important; }",
+        ".goog-te-banner-frame.skiptranslate { display: none !important; }",
+        ".goog-te-banner-frame { display: none !important; }",
+        "#goog-gt-tt, .goog-te-balloon-frame { display: none !important; visibility: hidden !important; }",
+        ".goog-tooltip { display: none !important; }",
+        ".goog-tooltip:hover { display: none !important; }",
+        ".goog-text-highlight { background-color: transparent !important; box-shadow: none !important; }",
+        ".skiptranslate > iframe.goog-te-banner-frame { display: none !important; }",
+        "div#goog-gt- { display: none !important; }",
+        ".goog-logo-link { display: none !important; }",
+        ".goog-te-gadget { color: transparent !important; }",
+        ".goog-te-gadget .goog-te-combo { margin: 0 !important; }"
+    ].join(" ");
     document.head.appendChild(style);
 })();
 
