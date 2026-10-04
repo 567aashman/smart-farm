@@ -175,6 +175,7 @@ async def global_exception_handler(request: Request, exc: Exception):
 
 # ── Health Endpoint (Phase 0) ──
 @app.get("/health", tags=["Health"])
+@app.get("/api/health", tags=["Health"])
 async def health_check():
     """
     Health check endpoint.
@@ -229,6 +230,6 @@ if __name__ == "__main__":
         "backend.main:app",
         host="0.0.0.0",
         port=port,
-        reload=settings.is_development,
+        reload=False,
         log_level=settings.log_level.lower(),
     )
