@@ -74,6 +74,72 @@
     .success-icon { font-size: 4rem; margin-bottom: 16px; }
     .success-screen h2 { font-family: 'Outfit', sans-serif; font-size: 1.4rem; font-weight: 700; margin-bottom: 8px; }
     .success-screen p { color: var(--color-text-dim); font-size: 0.9rem; }
+
+    /* Live Location Button Styling */
+    .btn-live-location {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(74, 222, 128, 0.12);
+      border: 1px solid rgba(74, 222, 128, 0.35);
+      color: var(--color-primary);
+      font-size: 0.73rem;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: var(--transition);
+      text-transform: none;
+      letter-spacing: normal;
+      line-height: 1.2;
+    }
+    .btn-live-location:hover {
+      background: rgba(74, 222, 128, 0.22);
+      border-color: var(--color-primary);
+      box-shadow: 0 0 10px rgba(74, 222, 128, 0.25);
+      transform: translateY(-1px);
+    }
+    .btn-live-location:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .btn-live-location.loading {
+      animation: pulseLiveLoc 1.2s infinite ease-in-out;
+    }
+    @keyframes pulseLiveLoc {
+      0% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.65; transform: scale(0.97); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    /* Google Places Autocomplete Dark Theme */
+    .pac-container {
+      background-color: #152217 !important;
+      border: 1px solid var(--color-border-light) !important;
+      border-radius: var(--radius-md) !important;
+      box-shadow: var(--shadow-lg) !important;
+      font-family: 'Inter', sans-serif !important;
+      margin-top: 4px !important;
+      z-index: 99999 !important;
+    }
+    .pac-item {
+      padding: 8px 12px !important;
+      color: var(--color-text) !important;
+      border-top: 1px solid var(--color-border) !important;
+      cursor: pointer !important;
+    }
+    .pac-item:hover, .pac-item-selected {
+      background-color: var(--color-surface-3) !important;
+    }
+    .pac-item-query {
+      color: var(--color-primary) !important;
+      font-size: 0.88rem !important;
+    }
+    .pac-matched {
+      color: var(--color-accent) !important;
+      font-weight: 700 !important;
+    }
   </style>
 </head>
 <body>
@@ -123,21 +189,33 @@
           </div>
           <div class="form-row">
             <div class="form-group">
-              <label class="form-label" for="farm-location">Location (City/District) *</label>
-              <input class="form-control" id="farm-location" type="text" placeholder="e.g. Nagpur, Pune, Indore">
-              <div class="form-hint">Use city name for weather accuracy</div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <label class="form-label" for="farm-location" style="margin-bottom: 0;">Location (City/District) *</label>
+                <button type="button" class="btn-live-location" id="btn-live-location" onclick="detectLiveLocation()" title="Detect current GPS location">
+                  <span id="loc-btn-icon">📍</span> <span id="loc-btn-text">Live Location</span>
+                </button>
+              </div>
+              <div style="position: relative;">
+                <input class="form-control" id="farm-location" type="text" placeholder="e.g. Nagpur, Pune, Indore" style="padding-right: 36px;">
+                <button type="button" id="btn-quick-gps" onclick="detectLiveLocation()" title="Click to use Live GPS Location" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 1.05rem; padding: 2px; line-height: 1; transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-50%) scale(1.2)'" onmouseout="this.style.transform='translateY(-50%) scale(1)'">
+                  📍
+                </button>
+              </div>
+              <div class="form-hint" id="farm-location-hint">Type manually with autocomplete or click <b>Live Location</b></div>
             </div>
             <div class="form-group">
               <label class="form-label" for="farm-state">State</label>
               <select class="form-control" id="farm-state">
                 <option value="">Select State</option>
-                <option>Andhra Pradesh</option><option>Assam</option><option>Bihar</option>
-                <option>Chhattisgarh</option><option>Gujarat</option><option>Haryana</option>
+                <option>Andhra Pradesh</option><option>Arunachal Pradesh</option><option>Assam</option><option>Bihar</option>
+                <option>Chhattisgarh</option><option>Goa</option><option>Gujarat</option><option>Haryana</option>
                 <option>Himachal Pradesh</option><option>Jharkhand</option><option>Karnataka</option>
                 <option>Kerala</option><option>Madhya Pradesh</option><option>Maharashtra</option>
-                <option>Manipur</option><option>Odisha</option><option>Punjab</option>
-                <option>Rajasthan</option><option>Tamil Nadu</option><option>Telangana</option>
+                <option>Manipur</option><option>Meghalaya</option><option>Mizoram</option><option>Nagaland</option>
+                <option>Odisha</option><option>Punjab</option><option>Rajasthan</option><option>Sikkim</option>
+                <option>Tamil Nadu</option><option>Telangana</option><option>Tripura</option>
                 <option>Uttar Pradesh</option><option>Uttarakhand</option><option>West Bengal</option>
+                <option>Delhi</option><option>Jammu and Kashmir</option><option>Ladakh</option><option>Puducherry</option><option>Chandigarh</option>
               </select>
             </div>
           </div>
@@ -270,9 +348,9 @@
   </div>
 
   <div id="toast-container"></div>
-  <script src="js/api.js?v=25"></script>
-  <script src="js/onboarding.js?v=25"></script>
-  <script src="js/ask-shyam-widget.js?v=25"></script>
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBJWBbh0coofndAkG6c8tNgmeiad9qhUG8&libraries=places"></script>
+  <script src="js/api.js?v=26"></script>
+  <script src="js/onboarding.js?v=26"></script>
+  <script src="js/ask-shyam-widget.js?v=26"></script>
 </body>
 </html>

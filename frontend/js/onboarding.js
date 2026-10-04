@@ -10,6 +10,7 @@ const TOTAL_STEPS = 3;
 let createdUserId = null;
 let createdFarmId = null;
 let createdFieldId = null;
+let detectedFarmCoords = null;
 
 let isEditMode = false;
 
@@ -121,6 +122,11 @@ async function submitStep2() {
     water_source: waterSource,
     country: 'India',
   };
+
+  if (detectedFarmCoords && detectedFarmCoords.latitude && detectedFarmCoords.longitude) {
+    farmData.latitude = detectedFarmCoords.latitude;
+    farmData.longitude = detectedFarmCoords.longitude;
+  }
 
   if (isEditMode) {
     await API.updateFarm(createdFarmId, farmData);
@@ -260,40 +266,256 @@ async function initOnboarding() {
 initOnboarding();
 
 
-function initLocationAutocomplete() {
-    const input = document.getElementById('farm-location');
-    if (input && typeof google !== 'undefined' && google.maps && google.maps.places) {
-        const autocomplete = new google.maps.places.Autocomplete(input, {
-            types: ['(regions)'],
-            componentRestrictions: { country: 'in' }
-        });
-        
-        autocomplete.addListener('place_changed', function() {
-            const place = autocomplete.getPlace();
-            if (place.address_components) {
-                let stateStr = '';
-                for (let component of place.address_components) {
-                    if (component.types.includes('administrative_area_level_1')) {
-                        stateStr = component.long_name;
-                        break;
-                    }
-                }
-                if (stateStr) {
-                    const stateSelect = document.getElementById('farm-state');
-                    if (stateSelect) {
-                        for (let i = 0; i < stateSelect.options.length; i++) {
-                            if (stateSelect.options[i].text === stateStr || stateSelect.options[i].value === stateStr) {
-                                stateSelect.selectedIndex = i;
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-        });
+/**
+ * Match and select state dropdown option based on state name string
+ */
+function selectStateByName(stateStr) {
+  if (!stateStr) return;
+  const stateSelect = document.getElementById('farm-state');
+  if (!stateSelect) return;
+
+  const normalize = (s) => (s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+  const target = normalize(stateStr);
+
+  for (let i = 0; i < stateSelect.options.length; i++) {
+    const opt = stateSelect.options[i];
+    const optVal = normalize(opt.value || opt.text);
+    if (optVal && (optVal === target || target.includes(optVal) || optVal.includes(target))) {
+      stateSelect.selectedIndex = i;
+      return;
     }
+  }
+}
+
+/**
+ * Detect Current Live Location using Browser GPS + Google Geocoding (with fallbacks)
+ */
+async function detectLiveLocation() {
+  const btn = document.getElementById('btn-live-location');
+  const btnText = document.getElementById('loc-btn-text');
+  const btnIcon = document.getElementById('loc-btn-icon');
+  const hint = document.getElementById('farm-location-hint');
+  const locationInput = document.getElementById('farm-location');
+
+  if (!navigator.geolocation) {
+    const msg = 'Geolocation is not supported by your browser.';
+    if (typeof showToast === 'function') showToast(msg, 'error');
+    else alert(msg);
+    return;
+  }
+
+  // Update UI to loading state
+  if (btn) {
+    btn.disabled = true;
+    btn.classList.add('loading');
+  }
+  if (btnText) btnText.textContent = 'Locating...';
+  if (btnIcon) btnIcon.textContent = '⏳';
+  if (hint) hint.innerHTML = '<span style="color:var(--color-primary);">📡 Fetching your GPS coordinates...</span>';
+
+  navigator.geolocation.getCurrentPosition(
+    async (position) => {
+      const lat = position.coords.latitude;
+      const lng = position.coords.longitude;
+      detectedFarmCoords = { latitude: lat, longitude: lng };
+
+      if (hint) hint.innerHTML = '<span style="color:var(--color-primary);">🔍 Identifying city & state...</span>';
+
+      try {
+        let city = '';
+        let district = '';
+        let state = '';
+
+        // 1. Try Google Maps Geocoder if loaded and available
+        if (typeof google !== 'undefined' && google.maps && google.maps.Geocoder) {
+          try {
+            const geocoder = new google.maps.Geocoder();
+            const gResults = await new Promise((resolve) => {
+              geocoder.geocode({ location: { lat, lng } }, (results, status) => {
+                if (status === 'OK' && results && results.length > 0) {
+                  resolve(results);
+                } else {
+                  resolve(null);
+                }
+              });
+            });
+
+            if (gResults && gResults.length > 0) {
+              for (const item of gResults) {
+                for (const comp of item.address_components) {
+                  if (!city && (comp.types.includes('locality') || comp.types.includes('postal_town'))) {
+                    city = comp.long_name;
+                  }
+                  if (!district && comp.types.includes('administrative_area_level_2')) {
+                    district = comp.long_name;
+                  }
+                  if (!state && comp.types.includes('administrative_area_level_1')) {
+                    state = comp.long_name;
+                  }
+                }
+                if (city && state) break;
+              }
+            }
+          } catch (gErr) {
+            console.warn('Google Geocoder lookup warning:', gErr);
+          }
+        }
+
+        // 2. Fallback to BigDataCloud reverse geocoding API
+        if (!city && !district) {
+          try {
+            const bdcRes = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=en`);
+            if (bdcRes.ok) {
+              const bdcData = await bdcRes.json();
+              city = bdcData.city || bdcData.locality || '';
+              state = bdcData.principalSubdivision || state;
+              if (bdcData.localityInfo && bdcData.localityInfo.administrative) {
+                for (const adm of bdcData.localityInfo.administrative) {
+                  if (adm.adminLevel === 5 && !district) district = adm.name.replace(/\s+district/i, '');
+                  if (adm.adminLevel === 4 && !state) state = adm.name;
+                }
+              }
+            }
+          } catch (bErr) {
+            console.warn('BigDataCloud reverse geocode fallback warning:', bErr);
+          }
+        }
+
+        // 3. Fallback to OpenStreetMap Nominatim reverse geocode
+        if (!city && !district) {
+          try {
+            const osmRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=10&addressdetails=1`);
+            if (osmRes.ok) {
+              const osmData = await osmRes.json();
+              const addr = osmData.address || {};
+              city = addr.city || addr.town || addr.village || addr.county || '';
+              district = addr.state_district || district;
+              state = addr.state || state;
+            }
+          } catch (oErr) {
+            console.warn('Nominatim reverse geocode fallback warning:', oErr);
+          }
+        }
+
+        // Determine final location name
+        const finalLocation = city || district || `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+        if (locationInput) {
+          locationInput.value = finalLocation;
+        }
+
+        // Select matching state
+        if (state) {
+          selectStateByName(state);
+        }
+
+        // Update hint with success badge
+        if (hint) {
+          hint.innerHTML = `<span style="color:var(--color-primary); font-weight: 500;">✓ Live location set: <b>${finalLocation}</b>${state ? ' (' + state + ')' : ''}</span>`;
+        }
+
+        if (typeof showToast === 'function') {
+          showToast(`📍 Location detected: ${finalLocation}`, 'success');
+        }
+      } catch (err) {
+        console.error('Error resolving location name:', err);
+        if (locationInput && !locationInput.value) {
+          locationInput.value = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+        }
+        if (hint) {
+          hint.innerHTML = `<span style="color:var(--color-primary);">✓ GPS Coordinates set: ${lat.toFixed(4)}, ${lng.toFixed(4)}</span>`;
+        }
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.classList.remove('loading');
+        }
+        if (btnText) btnText.textContent = 'Live Location';
+        if (btnIcon) btnIcon.textContent = '📍';
+      }
+    },
+    (err) => {
+      console.error('Geolocation error:', err);
+      let errMsg = 'Could not access live location.';
+      if (err.code === 1) {
+        errMsg = 'Location permission was denied. Please allow location access or type manually.';
+      } else if (err.code === 2) {
+        errMsg = 'GPS location unavailable. Please type manually.';
+      } else if (err.code === 3) {
+        errMsg = 'GPS request timed out. Please try again or type manually.';
+      }
+
+      if (hint) {
+        hint.innerHTML = `<span style="color:var(--color-red);">${errMsg}</span>`;
+      }
+      if (typeof showToast === 'function') {
+        showToast(errMsg, 'error');
+      }
+
+      if (btn) {
+        btn.disabled = false;
+        btn.classList.remove('loading');
+      }
+      if (btnText) btnText.textContent = 'Live Location';
+      if (btnIcon) btnIcon.textContent = '📍';
+    },
+    { enableHighAccuracy: true, timeout: 10000, maximumAge: 30000 }
+  );
+}
+
+/**
+ * Initialize Google Places Autocomplete for manual location typing
+ */
+function initLocationAutocomplete() {
+  const input = document.getElementById('farm-location');
+  if (!input) return;
+
+  // Manual typing listener to keep manual control clean
+  input.addEventListener('input', () => {
+    // If user is actively typing, inform them manual editing is active
+    const hint = document.getElementById('farm-location-hint');
+    if (hint && !hint.textContent.includes('Manual typing')) {
+      hint.innerHTML = 'Manual typing active. Tip: Click <b>Live Location</b> anytime for GPS.';
+    }
+  });
+
+  if (typeof google !== 'undefined' && google.maps && google.maps.places) {
+    try {
+      const autocomplete = new google.maps.places.Autocomplete(input, {
+        types: ['(regions)'],
+        componentRestrictions: { country: 'in' }
+      });
+
+      autocomplete.addListener('place_changed', function() {
+        const place = autocomplete.getPlace();
+        if (place.geometry && place.geometry.location) {
+          detectedFarmCoords = {
+            latitude: place.geometry.location.lat(),
+            longitude: place.geometry.location.lng()
+          };
+        }
+        if (place.address_components) {
+          let stateStr = '';
+          for (let component of place.address_components) {
+            if (component.types.includes('administrative_area_level_1')) {
+              stateStr = component.long_name;
+              break;
+            }
+          }
+          if (stateStr) {
+            selectStateByName(stateStr);
+          }
+        }
+        const hint = document.getElementById('farm-location-hint');
+        if (hint) {
+          hint.innerHTML = '<span style="color:var(--color-primary);">✓ Location selected from Google Places</span>';
+        }
+      });
+    } catch (e) {
+      console.warn('Google Places Autocomplete init error:', e);
+    }
+  }
 }
 
 window.addEventListener('load', () => {
-    setTimeout(initLocationAutocomplete, 500);
+  setTimeout(initLocationAutocomplete, 500);
 });
