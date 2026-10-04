@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SmartFarm — Dashboard</title>
-  <meta name="description" content="Your SmartFarm farm dashboard — weather, irrigation, crop status, risks, and daily action plan.">
+  <title>SmartFarm â€” Dashboard</title>
+  <meta name="description" content="Your SmartFarm farm dashboard â€” weather, irrigation, crop status, risks, and daily action plan.">
   <link rel="stylesheet" href="styles/style.css">
 </head>
 <body>
@@ -12,45 +12,45 @@
     <!-- Sidebar -->
     <nav class="sidebar" id="sidebar">
       <div class="sidebar-logo">
-        <h1><span class="logo-icon">🌾</span> SmartFarm</h1>
+        <h1><span class="logo-icon">ðŸŒ¾</span> SmartFarm</h1>
         <p>Agricultural Intelligence</p>
       </div>
       <div class="sidebar-nav">
         <div class="nav-section">
           <div class="nav-section-label">Farm</div>
           <a class="nav-item active" href="dashboard.html" id="nav-dashboard">
-            <span class="nav-icon">📊</span> Dashboard
+            <span class="nav-icon">ðŸ“Š</span> Dashboard
           </a>
           <a class="nav-item" href="crops.html" id="nav-crops">
-            <span class="nav-icon">🌱</span> My Crops
+            <span class="nav-icon">ðŸŒ±</span> My Crops
           </a>
           <a class="nav-item" href="irrigation.html" id="nav-irrigation">
-            <span class="nav-icon">💧</span> Irrigation
+            <span class="nav-icon">ðŸ’§</span> Irrigation
           </a>
         </div>
         <div class="nav-section">
           <div class="nav-section-label">Insights</div>
           
           <a class="nav-item" href="#" id="nav-market" onclick="showMarketModal(); return false;">
-            <span class="nav-icon">💰</span> Mandi Prices
+            <span class="nav-icon">ðŸ’°</span> Mandi Prices
           </a>
           <a class="nav-item" href="#" id="nav-telegram" onclick="showTelegramModal(); return false;">
-            <span class="nav-icon">💬</span> Telegram
+            <span class="nav-icon">ðŸ’¬</span> Telegram
           </a>
         </div>
         <div class="nav-section">
           <div class="nav-section-label">Account</div>
           <a class="nav-item" href="onboarding.html" id="nav-setup">
-            <span class="nav-icon">⚙️</span> Farm Settings
+            <span class="nav-icon">âš™ï¸</span> Farm Settings
           </a>
           <a class="nav-item" href="#" onclick="logout(); return false;">
-            <span class="nav-icon">🚪</span> Logout
+            <span class="nav-icon">ðŸšª</span> Logout
           </a>
         </div>
       </div>
       
         <div style="padding: 10px 16px; display:flex; align-items:center; justify-content:space-between; border-top:1px solid var(--color-border); margin-top:10px;" class="skiptranslate">
-            <span style="font-size:0.95rem; font-weight:bold; color:var(--color-text);">🌐 English / हिंदी</span>
+            <span style="font-size:0.95rem; font-weight:bold; color:var(--color-text);">ðŸŒ English / à¤¹à¤¿à¤‚à¤¦à¥€</span>
             <label class="lang-switch">
                 <input type="checkbox" class="globalLangToggleCheckbox" onchange="toggleWebsiteLanguage()">
                 <span class="lang-slider"></span>
@@ -58,10 +58,10 @@
         </div>
       <div class="sidebar-footer">
         <div class="farm-info">
-          <div class="farm-avatar">🏡</div>
+          <div class="farm-avatar">ðŸ¡</div>
           <div>
             <div class="font-semibold" id="sb-farm-name" style="font-size:0.82rem;color:var(--color-text)">Loading...</div>
-            <div id="sb-user-name" style="font-size:0.7rem;color:var(--color-text-muted)">—</div>
+            <div id="sb-user-name" style="font-size:0.7rem;color:var(--color-text-muted)">â€”</div>
           </div>
         </div>
         <div style="font-size:0.65rem;color:var(--color-text-muted)">SmartFarm v1.0</div>
@@ -69,18 +69,18 @@
     </nav>
 
     <!-- Mobile toggle -->
-    <button class="sidebar-toggle" id="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+    <button class="sidebar-toggle" id="sidebar-toggle" onclick="toggleSidebar()">â˜°</button>
 
     <!-- Main content -->
     <div class="main-content">
       <div class="page-header">
         <div>
-          <h2>🌾 Farm Dashboard</h2>
+          <h2>ðŸŒ¾ Farm Dashboard</h2>
           <div class="header-subtitle" id="header-date">Loading...</div>
         </div>
         <div class="header-actions">
-          <button class="btn btn-secondary btn-sm" onclick="refreshAll()">🔄 Refresh</button>
-          <div id="risk-indicator" class="badge badge-green">🟢 Loading risks...</div>
+          <button class="btn btn-secondary btn-sm" onclick="refreshAll()">ðŸ”„ Refresh</button>
+          <div id="risk-indicator" class="badge badge-green">ðŸŸ¢ Loading risks...</div>
         </div>
       </div>
 
@@ -109,7 +109,7 @@
         <!-- 7-Day Forecast -->
         <div class="card mb-6" id="forecast-section">
           <div class="card-header">
-            <div class="card-title"><span class="card-icon">📅</span> 7-Day Weather Forecast</div>
+            <div class="card-title"><span class="card-icon">ðŸ“…</span> 7-Day Weather Forecast</div>
             <span class="text-muted text-sm" id="forecast-location">Loading...</span>
           </div>
           <div class="forecast-strip skeleton" id="forecast-strip" style="height:100px;border-radius:8px;"></div>
@@ -118,13 +118,13 @@
         <!-- ACTION PLAN + RISKS -->
         <div class="grid-2 mb-6">
           <div>
-            <div class="section-title"><span>📋</span> Today's Farm Actions</div>
+            <div class="section-title"><span>ðŸ“‹</span> Today's Farm Actions</div>
             <div id="action-plan-section">
               <div class="skeleton" style="height:300px;border-radius:16px;"></div>
             </div>
           </div>
           <div>
-            <div class="section-title"><span>⚠️</span> Risk Alerts</div>
+            <div class="section-title"><span>âš ï¸</span> Risk Alerts</div>
             <div id="risks-section">
               <div class="skeleton" style="height:300px;border-radius:16px;"></div>
             </div>
@@ -135,8 +135,8 @@
         <div class="grid-2 mb-6">
           <div>
             <div class="section-title" style="justify-content:space-between;">
-              <span><span>🌱</span> My Active Crops</span>
-              <a href="crops.html" class="text-sm text-primary">View all →</a>
+              <span><span>ðŸŒ±</span> My Active Crops</span>
+              <a href="crops.html" class="text-sm text-primary">View all â†’</a>
             </div>
             <div id="crops-section">
               <div class="skeleton" style="height:200px;border-radius:16px;"></div>
@@ -144,8 +144,8 @@
           </div>
           <div>
             <div class="section-title" style="justify-content:space-between;">
-              <span><span>✅</span> Pending Tasks</span>
-              <span id="task-count" class="badge badge-amber">—</span>
+              <span><span>âœ…</span> Pending Tasks</span>
+              <span id="task-count" class="badge badge-amber">â€”</span>
             </div>
             <div id="tasks-section">
               <div class="skeleton" style="height:200px;border-radius:16px;"></div>
@@ -165,7 +165,7 @@
 
         <!-- CROP RECOMMENDATIONS -->
         <div class="mb-6">
-          <div class="section-title"><span>🌾</span> Crop Recommendations for This Season</div>
+          <div class="section-title"><span>ðŸŒ¾</span> Crop Recommendations for This Season</div>
           <div id="recommendations-section">
             <div class="skeleton" style="height:120px;border-radius:16px;"></div>
           </div>
@@ -180,8 +180,8 @@
   <div class="modal-overlay hidden" id="market-modal">
     <div class="modal">
       <div class="modal-header">
-        <span class="modal-title">💰 Mandi / Market Prices</span>
-        <button class="modal-close" onclick="closeModal('market-modal')">✕</button>
+        <span class="modal-title">ðŸ’° Mandi / Market Prices</span>
+        <button class="modal-close" onclick="closeModal('market-modal')">âœ•</button>
       </div>
       <div class="modal-body" id="market-modal-body">
         <div class="loading-spinner"></div>
@@ -193,8 +193,8 @@
   <div class="modal-overlay hidden" id="telegram-modal">
     <div class="modal">
       <div class="modal-header">
-        <span class="modal-title">💬 Connect Telegram</span>
-        <button class="modal-close" onclick="closeModal('telegram-modal')">✕</button>
+        <span class="modal-title">ðŸ’¬ Connect Telegram</span>
+        <button class="modal-close" onclick="closeModal('telegram-modal')">âœ•</button>
       </div>
       <div class="modal-body" id="telegram-modal-body">
         <div class="loading-spinner"></div>
@@ -208,3 +208,4 @@
   <script src="js/ask-shyam-widget.js?v=20"></script>
 </body>
 </html>
+
