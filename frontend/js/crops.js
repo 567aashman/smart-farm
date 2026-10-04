@@ -157,21 +157,29 @@ function renderHarvestedCrops() {
           </div>
           <div class="divider"></div>
           
-          <!-- REVENUE PREDICTOR -->
-          <div class="mt-2 mb-3 p-3" style="background: rgba(255,255,255,0.05); border-radius: 8px; border: 1px solid var(--color-border);">
-            <div style="font-size:0.8rem; font-weight:600; margin-bottom: 8px; color:var(--color-primary)">💰 Revenue Predictor</div>
-            <div class="flex gap-2" style="align-items: center; margin-bottom: 8px;">
-              <div style="flex:1">
-                 <label style="font-size:0.7rem; color:var(--color-text-muted)">Est. Yield (Qtls)</label>
-                 <input type="number" id="yield-${c.crop_id}" class="form-control" style="padding: 4px 8px; font-size: 0.85rem;" placeholder="e.g. 50" value="${defaultYield}" oninput="calculateRevenue(${c.crop_id})">
-              </div>
-              <div style="flex:1">
-                 <label style="font-size:0.7rem; color:var(--color-text-muted)">MSP (₹ / Qtl)</label>
-                 <input type="number" id="msp-${c.crop_id}" class="form-control" style="padding: 4px 8px; font-size: 0.85rem;" placeholder="2300" value="${defaultMSP}" oninput="calculateRevenue(${c.crop_id})">
-              </div>
+          <!-- PREMIUM REVENUE PREDICTOR -->
+          <div class="mt-3 mb-3" style="background: var(--color-surface-2); border-radius: 12px; overflow: hidden; border: 1px solid var(--color-border);">
+            <div style="background: linear-gradient(90deg, rgba(16,185,129,0.1), rgba(16,185,129,0.02)); padding: 10px 14px; border-bottom: 1px solid var(--color-border); display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 1.2rem;">💰</span>
+              <span style="font-size: 0.85rem; font-weight: 700; color: var(--color-green); letter-spacing: 0.5px; text-transform: uppercase;">Revenue Predictor</span>
             </div>
-            <div style="font-size:0.85rem; text-align: right;">
-              Est. Revenue: <strong id="revenue-${c.crop_id}" style="color: #10b981; font-size: 1.1rem;">₹ ${defaultRevenue.toLocaleString('en-IN')}</strong>
+            
+            <div style="padding: 14px;">
+              <div class="flex gap-3" style="margin-bottom: 12px;">
+                <div style="flex:1">
+                   <label style="font-size:0.7rem; font-weight:600; color:var(--color-text-muted); text-transform:uppercase; margin-bottom:4px; display:block;">Est. Yield (Qtls)</label>
+                   <input type="number" id="yield-${c.crop_id}" class="form-control" style="padding: 8px 10px; font-size: 0.95rem; font-weight: 600; background: var(--color-background); border: 1px solid var(--color-border); border-radius: 6px; width: 100%; box-sizing: border-box;" placeholder="50" value="${defaultYield}" oninput="calculateRevenue(${c.crop_id})">
+                </div>
+                <div style="flex:1">
+                   <label style="font-size:0.7rem; font-weight:600; color:var(--color-text-muted); text-transform:uppercase; margin-bottom:4px; display:block;">MSP (₹ / Qtl)</label>
+                   <input type="number" id="msp-${c.crop_id}" class="form-control" style="padding: 8px 10px; font-size: 0.95rem; font-weight: 600; background: var(--color-background); border: 1px solid var(--color-border); border-radius: 6px; width: 100%; box-sizing: border-box;" placeholder="2300" value="${defaultMSP}" oninput="calculateRevenue(${c.crop_id})">
+                </div>
+              </div>
+              
+              <div style="background: var(--color-background); padding: 12px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px dashed rgba(16,185,129,0.4);">
+                <span style="font-size:0.8rem; font-weight: 600; color:var(--color-text-muted);">Estimated Revenue</span>
+                <strong id="revenue-${c.crop_id}" style="color: var(--color-green); font-size: 1.3rem; font-weight: 800; text-shadow: 0 0 10px rgba(16,185,129,0.2);">₹ ${defaultRevenue.toLocaleString('en-IN')}</strong>
+              </div>
             </div>
           </div>
 
