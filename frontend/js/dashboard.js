@@ -579,9 +579,18 @@ function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
 
 // ── Actions ──
 async function logIrrigation(amountMm) {
+  const actualAmount = prompt(`How much water did you add? (Recommended: ${amountMm}mm)\n\nNote: 1mm ≈ 4,000 Liters per acre.`, amountMm);
+  if (actualAmount === null) return; // User cancelled
+  
+  const parsedAmount = parseFloat(actualAmount);
+  if (isNaN(parsedAmount) || parsedAmount < 0) {
+      showToast("Please enter a valid positive number for water amount.", "error");
+      return;
+  }
+  
   try {
-    await API.logIrrigation(farmId, amountMm);
-    showToast(`Irrigation of ${amountMm}mm logged successfully!`, 'success');
+    await API.logIrrigation(farmId, parsedAmount);
+    showToast(`Irrigation of ${parsedAmount}mm logged successfully!`, 'success');
     await loadIrrigation();
     await loadStats();
   } catch (e) {
