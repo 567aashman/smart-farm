@@ -204,7 +204,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     <div class="shyam-chat-header-title">Ask Shyam</div>
                     <div class="shyam-chat-header-subtitle">Your AI Farming Expert</div>
                 </div>
-                <select id="shyamLangToggle" style="background:rgba(255,255,255,0.2); color:white; border:1px solid rgba(255,255,255,0.4); border-radius:4px; padding:2px; font-size:0.8rem; outline:none; margin-right:10px;"><option value="hi" style="color:black;">HI</option><option value="en" style="color:black;">EN</option></select>
                 <button class="shyam-chat-close" id="shyamStopAudioBtn" style="display:none; font-size:1.4rem; cursor:pointer;" title="Stop Voice">🔇</button>
                 <button class="shyam-chat-close" id="shyamCloseBtn">✕</button>
             </div>

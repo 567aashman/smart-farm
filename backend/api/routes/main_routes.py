@@ -330,8 +330,11 @@ async def chat_with_farmai(payload: AskShyamRequest, db: Session = Depends(get_d
             import tempfile
             import os
             try:
-                # Use a masculine Hindi voice (MadhurNeural)
-                voice = "en-IN-PrabhatNeural" if payload.language == "en" else "hi-IN-MadhurNeural"
+                # Auto-detect language based on response text (check for Devanagari block)
+                import re
+                has_hindi = bool(re.search(r'[\u0900-\u097F]', result["reply"]))
+                voice = "hi-IN-MadhurNeural" if has_hindi else "en-IN-PrabhatNeural"
+                
                 communicate = edge_tts.Communicate(result["reply"], voice)
                 
                 with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as tf:
