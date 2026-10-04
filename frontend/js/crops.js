@@ -183,13 +183,25 @@ function renderHarvestedCrops() {
             </div>
           </div>
 
-          <div class="flex gap-2">
-            <button class="btn btn-ghost btn-sm text-red" style="color: red;" onclick="deleteCropEntry(${c.crop_id})">🗑️ Delete Record</button>
+          <div class="flex gap-2" style="margin-top: 12px;">
+            <button class="btn btn-primary btn-sm" onclick="undoHarvestCrop(${c.crop_id})">↩️ Undo</button>
+            <button class="btn btn-ghost btn-sm text-red" style="color: red;" onclick="deleteCropEntry(${c.crop_id})">🗑️ Delete</button>
           </div>
         </div>
       `}).join('')}
     </div>`;
 }
+
+window.undoHarvestCrop = async function(cropId) {
+    if(!confirm("Are you sure you want to move this crop back to Active?")) return;
+    try {
+        await API.updateCrop(cropId, { status: "active" });
+        await loadActiveCrops(); // Refresh everything
+        switchTab('active'); // Switch to active tab to see it
+    } catch(e) {
+        alert("Failed to undo harvest: " + e.message);
+    }
+};
 
 function getDefaultMSP(cropName) {
     const name = cropName.toLowerCase();
