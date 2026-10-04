@@ -151,6 +151,25 @@ function renderHarvestedCrops() {
             <div class="crop-meta-item">📍 ${c.field_name}</div>
           </div>
           <div class="divider"></div>
+          
+          <!-- REVENUE PREDICTOR -->
+          <div class="mt-2 mb-3 p-3" style="background: rgba(255,255,255,0.05); border-radius: 8px; border: 1px solid var(--color-border);">
+            <div style="font-size:0.8rem; font-weight:600; margin-bottom: 8px; color:var(--color-primary)">💰 Revenue Predictor</div>
+            <div class="flex gap-2" style="align-items: center; margin-bottom: 8px;">
+              <div style="flex:1">
+                 <label style="font-size:0.7rem; color:var(--color-text-muted)">Est. Yield (Qtls)</label>
+                 <input type="number" id="yield-${c.crop_id}" class="form-control" style="padding: 4px 8px; font-size: 0.85rem;" placeholder="e.g. 50" oninput="calculateRevenue(${c.crop_id})">
+              </div>
+              <div style="flex:1">
+                 <label style="font-size:0.7rem; color:var(--color-text-muted)">MSP (₹ / Qtl)</label>
+                 <input type="number" id="msp-${c.crop_id}" class="form-control" style="padding: 4px 8px; font-size: 0.85rem;" placeholder="2300" value="${getDefaultMSP(c.crop_name)}" oninput="calculateRevenue(${c.crop_id})">
+              </div>
+            </div>
+            <div style="font-size:0.85rem; text-align: right;">
+              Est. Revenue: <strong id="revenue-${c.crop_id}" style="color: #10b981; font-size: 1.1rem;">₹ 0</strong>
+            </div>
+          </div>
+
           <div class="flex gap-2">
             <button class="btn btn-ghost btn-sm text-red" style="color: red;" onclick="deleteCropEntry(${c.crop_id})">🗑️ Delete Record</button>
           </div>
@@ -158,6 +177,32 @@ function renderHarvestedCrops() {
       `).join('')}
     </div>`;
 }
+
+function getDefaultMSP(cropName) {
+    const name = cropName.toLowerCase();
+    if (name.includes('wheat')) return 2275;
+    if (name.includes('rice') || name.includes('paddy')) return 2183;
+    if (name.includes('cotton')) return 6620;
+    if (name.includes('mustard')) return 5650;
+    if (name.includes('chana') || name.includes('gram')) return 5440;
+    if (name.includes('soybean')) return 4600;
+    if (name.includes('sugarcane')) return 315; // per quintal FRP
+    return 2000; // default fallback
+}
+
+window.calculateRevenue = function(cropId) {
+    const yieldInput = document.getElementById(`yield-${cropId}`);
+    const mspInput = document.getElementById(`msp-${cropId}`);
+    const revenueDisplay = document.getElementById(`revenue-${cropId}`);
+    
+    if (!yieldInput || !mspInput || !revenueDisplay) return;
+    
+    const yieldVal = parseFloat(yieldInput.value) || 0;
+    const mspVal = parseFloat(mspInput.value) || 0;
+    
+    const total = yieldVal * mspVal;
+    revenueDisplay.textContent = '₹ ' + total.toLocaleString('en-IN');
+};
 
 async function deleteCropEntry(cropId) {
     if(!confirm("Are you sure you want to remove this crop?")) return;
