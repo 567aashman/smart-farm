@@ -177,8 +177,7 @@
       if (State.isLoggedIn()) {
         window.location.href = 'dashboard.html';
       } else {
-        showToast('Please set up your farm first.', 'info');
-        setTimeout(() => window.location.href = 'onboarding.html', 1500);
+        window.location.href = 'onboarding.html';
       }
     }
 
